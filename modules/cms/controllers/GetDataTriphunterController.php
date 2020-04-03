@@ -2,6 +2,7 @@
 
 namespace app\modules\cms\controllers;
 
+use app\modules\cms\CMSConfig;
 use app\modules\cms\models\Destination;
 use app\modules\cms\models\FileRef;
 use app\modules\cms\models\FileRepo;
@@ -12,6 +13,14 @@ use yii\web\Controller;
 
 class GetDataTriphunterController extends Controller
 {
+    public $api = [
+        'destination' => 'https://triphunter.vn/api/v1/collections/1',
+        'da-lat-visit' => 'https://triphunter.vn/api/v2/places/28/1/items?article_type=1&currency=VND&page=1&currency=VND', //destination: 2
+        'da-lat-food' => 'https://triphunter.vn/api/v2/places/28/2/items?article_type=2&currency=VND&page=1&currency=VND', //destination: 2
+        'ha-noi-visit' => 'https://triphunter.vn/api/v2/places/58/1/items?article_type=1&currency=VND&page=1&currency=VND', //destination: 13
+        'ha-noi-food' => 'https://triphunter.vn/api/v2/places/58/2/items?article_type=2&currency=VND&page=1&currency=VND', //destination: 13
+        'ha-noi-rest' => 'https://triphunter.vn/api/v2/places/58/4/items?article_type=4&currency=VND&page=1&currency=VND', //destination: 13
+    ];
     public function actionGetDestination() {
         $url = 'https://triphunter.vn/api/v1/collections/1';
         $response = self::GetData($url);
@@ -38,8 +47,8 @@ class GetDataTriphunterController extends Controller
         }
     }
 
-    public function actionGetPlace($place_type = 1, $destination = 1, $page = 1) {
-        $url = 'https://triphunter.vn/api/v2/places/28/1/items?article_type=1&currency=VND&page=' .$page. '&currency=VND';
+    public function actionGetPlace($place_type, $destination, $page) {
+        $url = 'https://triphunter.vn/api/v2/places/58/4/items?article_type=4&currency=VND&page=' .$page. '&currency=VND';
         $response = self::GetData($url);
         if($response->isOk) {
             $transaction = Yii::$app->db->beginTransaction();
@@ -53,6 +62,10 @@ class GetDataTriphunterController extends Controller
                 }
 
                 $transaction->commit();
+                if($page < 40) {
+                    $page++;
+                    return $this->redirect(CMSConfig::getUrl('get-data-triphunter/get-place?place_type=' .$place_type. '&destination=' .$destination. '&page=' .$page));
+                }
             }  catch (\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
@@ -100,8 +113,7 @@ class GetDataTriphunterController extends Controller
     }
 
     public function SavePlace($data, $place_type, $destination) {
-        $slug = $data['slug'] . '-' . $data['id'];
-        $place = Place::findOne(['slug' => $slug]);
+        $place = Place::findOne(['slug' => $data['slug']]);
         if(!$place) {
             $photo_name = $data['slug'] . '-thumb';
             $photo = self::SavePhoto($data['cover_photo_thumb']['image_url'], $photo_name);
@@ -148,6 +160,9 @@ class GetDataTriphunterController extends Controller
             ]);
 
             $ref->save();
+            if($idx >= 10) {
+                break;
+            }
         }
     }
 
@@ -155,7 +170,9 @@ class GetDataTriphunterController extends Controller
         $slug = uniqid() . '-' . $name;
         $path = $slug . '.jpg';
         $DIR = 'uploads/';
-        $url = 'https://triphunter.vn' . $url;
+        if(!preg_match('/^http/', $url)) {
+            $url = 'https://triphunter.vn' . $url;
+        }
         $content = file_get_contents($url);
         if(file_put_contents($DIR . $path, $content)) {
             $photo = new FileRepo([
