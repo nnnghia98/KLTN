@@ -125,3 +125,48 @@ a.desc:after {
 .navbar-brand img {
     height: 2rem;
 }
+
+.form-control {
+    border-top-color: #ccc !important;
+    border: 1px solid #ccc;
+    border-radius: .1875rem;
+    padding: .5rem;
+}
+
+.form-control:focus {
+    box-shadow: unset;
+    border-color: #2196F3 !important;
+}
+
+.input-group-append {
+    margin-left: 0;
+    border-top-right-radius: .1875rem;
+    border-bottom-right-radius: .1875rem;
+    cursor: pointer;
+    transition: .5 all ease;
+}
+
+.input-group-append:hover {
+    opacity: .8;
+}
+
+.input-group-text {
+    padding: .5rem .625rem;
+    border-top-right-radius: .1875rem;
+    border-bottom-right-radius: .1875rem;
+}
+
+.media-list-photo {
+    display: block;
+    overflow: hidden;
+}
+
+.media-list-photo img {
+	-webkit-transition: .3s ease-in-out;
+	transition: .3s ease-in-out;
+}
+
+.media-list-photo:hover img {
+    -webkit-transform: rotate(5deg) scale(1.2);
+	transform: rotate(5deg) scale(1.2);
+}
