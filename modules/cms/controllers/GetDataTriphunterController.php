@@ -5,6 +5,7 @@ namespace app\modules\cms\controllers;
 use app\modules\cms\models\Destination;
 use app\modules\cms\models\FileRef;
 use app\modules\cms\models\FileRepo;
+use app\modules\cms\models\Place;
 use Yii;
 use yii\httpclient\Client;
 use yii\web\Controller;
@@ -37,6 +38,32 @@ class GetDataTriphunterController extends Controller
         }
     }
 
+    public function actionGetPlace($place_type = 1, $destination = 1, $page = 1) {
+        $url = 'https://triphunter.vn/api/v2/places/28/1/items?article_type=1&currency=VND&page=' .$page. '&currency=VND';
+        $response = self::GetData($url);
+        if($response->isOk) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try{
+                $data = $response->data;
+                foreach($data['data'] as $place) {
+                    $object = self::SavePlace($place, $place_type, $destination);
+                    if($object) {
+                        self::SavePhotoRef($object, $place['photos']);
+                    }
+                }
+
+                $transaction->commit();
+            }  catch (\Exception $e) {
+                $transaction->rollBack();
+                throw $e;
+            } catch (\Throwable $e) {
+                $transaction->rollBack();
+                throw $e;
+            }
+            
+        }
+    }
+
     public function GetData($url) {
         
         $client = new Client();
@@ -48,25 +75,61 @@ class GetDataTriphunterController extends Controller
     }
 
     public function SaveDestination($data) {
-        $photo_name = $data['slug'] . '-thumb';
-        $photo = self::SavePhoto($data['cover_photo_thumb']['image_url'], $photo_name);
-        $destination = new Destination([
-            'name' => $data['name'],
-            'lat' => strval($data['lat']),
-            'lng' => strval($data['lng']),
-            'subtitle' => $data['subtitle'],
-            'slug' => $data['slug'],
-            'status' => 1,
-            'delete' => 1,
-            'created_by' => Yii::$app->user->id,
-            'viewed' => 0,
-            'thumbnail' => $photo->path
-        ]);
-
-        if($destination->save()) {
-            return $destination;
+        $destination = Destination::findOne(['slug' => $data['slug']]);
+        if(!$destination) {
+            $photo_name = $data['slug'] . '-thumb';
+            $photo = self::SavePhoto($data['cover_photo_thumb']['image_url'], $photo_name);
+            $destination = new Destination([
+                'name' => $data['name'],
+                'lat' => strval($data['lat']),
+                'lng' => strval($data['lng']),
+                'subtitle' => $data['subtitle'],
+                'slug' => $data['slug'],
+                'status' => 1,
+                'delete' => 1,
+                'created_by' => Yii::$app->user->id,
+                'viewed' => 0,
+                'thumbnail' => $photo->path
+            ]);
+    
+            if($destination->save()) {
+                return $destination;
+            }
         }
+        return false;
+    }
 
+    public function SavePlace($data, $place_type, $destination) {
+        $slug = $data['slug'] . '-' . $data['id'];
+        $place = Place::findOne(['slug' => $slug]);
+        if(!$place) {
+            $photo_name = $data['slug'] . '-thumb';
+            $photo = self::SavePhoto($data['cover_photo_thumb']['image_url'], $photo_name);
+            $place = new Place([
+                'name' => $data['name'],
+                'lat' => strval($data['lat']),
+                'lng' => strval($data['lng']),
+                'subtitle' => $data['name'],
+                'slug' => $data['slug'],
+                'status' => 1,
+                'delete' => 1,
+                'created_by' => Yii::$app->user->id,
+                'viewed' => 0,
+                'thumbnail' => $photo->path,
+                'time_stay' => isset($data['stay_for']) ? $data['stay_for'] : 0,
+                'place_type_id' => $place_type,
+                'destination_id' => $destination,
+                'open_times' => self::FormatOpenTimes($data['open_times']),
+                'phone' => $data['contact_info']['phone_number'],
+                'address' => $data['contact_info']['address'],
+                'price' => $data['max_rate'],
+                'description' => $data['content'],
+            ]);
+    
+            if($place->save()) {
+                return $place;
+            }
+        }
         return false;
     }
 
@@ -108,5 +171,15 @@ class GetDataTriphunterController extends Controller
         }
 
         return false;
+    }
+
+    public function FormatOpenTimes($opentimes) {
+        $weeks = [];
+        foreach($opentimes as $date) {
+            unset($date['id']);
+            unset($date['created_at']);
+            array_push($weeks, $date);
+        }
+        return json_encode($weeks, true);
     }
 }
