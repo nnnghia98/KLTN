@@ -48,7 +48,7 @@ class GetDataTriphunterController extends Controller
     }
 
     public function actionGetPlace($place_type, $destination, $page) {
-        $url = 'https://triphunter.vn/api/v2/places/58/4/items?article_type=4&currency=VND&page=' .$page. '&currency=VND';
+        $url = 'https://triphunter.vn/api/v2/places/28/4/items?article_type=4&currency=VND&page=' .$page. '&currency=VND';
         $response = self::GetData($url);
         if($response->isOk) {
             $transaction = Yii::$app->db->beginTransaction();

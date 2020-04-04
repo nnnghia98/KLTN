@@ -31,13 +31,13 @@ class DestinationService
                         ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
                         ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
                         ->andWhere(['like', 'name', $keyword]);
+        if($rating) {
+            $query->andWhere(['>=', 'i.avg_rating', $rating]);
+        }
+
         $total = $query->select('COUNT(*)')->column();
         
         list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
-        
-        if($rating) {
-            $query->andWhere(['>', 'i.avg_rating', 0]);
-        }
                         
         $destinations = $query->select(['d.*', 'i.*'])
                         ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])

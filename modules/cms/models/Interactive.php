@@ -37,8 +37,7 @@ class Interactive extends \yii\db\ActiveRecord
             [['object_id', 'is_like', 'rating', 'created_by'], 'integer'],
             [['comment'], 'string'],
             [['created_at'], 'safe'],
-            [['object_type'], 'string', 'max' => 32],
-            [['image_review'], 'string', 'max' => 255],
+            [['object_type', 'image_review'], 'string', 'max' => 255],
         ];
     }
 

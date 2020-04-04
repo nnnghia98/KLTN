@@ -101,8 +101,8 @@ class AuthService
                     'auth_user_id' => $model->id
                 ]);
                 $userInfo->save();
-                SiteService::SendEmailInstruction($model, $password);
-                SiteService::WriteLog(Yii::$app->user->id, SiteService::$ACTIVITIES['DELETE_USER'], $model->id, $model->className(), $model->fullname);
+                // SiteService::SendEmailInstruction($model, $password);
+                SiteService::WriteLog(Yii::$app->user->id, SiteService::$ACTIVITIES['CREATE_USER'], $model->id, $model->className(), $model->fullname);
                 return true;
             }
         }

@@ -73,7 +73,7 @@ $pageData = [
                     ladda = Ladda.create($(".btn-create-user")[0]);
                 
                 ladda.start()
-                sendAjax(api, data, function(resp) {
+                sendAjax(api, data, 'POST', function(resp) {
                     ladda.stop()
                     if(resp.status) {
                         window.location.replace('<?= CMSConfig::getUrl('user') ?>')
