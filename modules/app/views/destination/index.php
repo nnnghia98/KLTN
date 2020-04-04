@@ -32,20 +32,20 @@ $pageData = [
                         </div>
                         <hr>
                         <div class="form-group">
-                            <label for="" class="font-weight-bold">Bình luận</label>
-                            <select class="form-control" v-model="comment" @change="getDestinations()">
-                                <option value="1">Giảm dần</option>
-                                <option value="0">Tăng dần</option>
-                            </select>
-                        </div>
-                        <hr>
-                        <div class="form-group">
                             <label for="" class="font-weight-bold">Đánh giá</label>
                             <select class="form-control" v-model="rating" @change="getDestinations()">
                                 <option value="5">5 sao</option>
                                 <option value="4">Trên 4 sao</option>
                                 <option value="3">Trên 3 sao</option>
                                 <option value="0">Tất cả</option>
+                            </select>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="" class="font-weight-bold">Bình luận</label>
+                            <select class="form-control" v-model="comment" @change="getDestinations()">
+                                <option value="1">Giảm dần</option>
+                                <option value="0">Tăng dần</option>
                             </select>
                         </div>
                     </div>
