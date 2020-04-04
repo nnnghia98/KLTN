@@ -39,11 +39,11 @@ use app\modules\cms\services\AuthService;
                 </a>
                 
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="<?= Yii::$app->homeUrl . 'app/place/visit' ?>" class="dropdown-item"><i class="icon-user-plus"></i> Tham quan</a>
+                    <a href="<?= Yii::$app->homeUrl . 'app/place/visit' ?>" class="dropdown-item"><i class="icon-camera"></i> Tham quan</a>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= Yii::$app->homeUrl . 'app/place/food' ?>" class="dropdown-item"><i class="icon-coins"></i> Ăn uống</a>
+                    <a href="<?= Yii::$app->homeUrl . 'app/place/food' ?>" class="dropdown-item"><i class="icon-cup2"></i> Ăn uống</a>
                     <div class="dropdown-divider"></div>
-                    <a href="<?= Yii::$app->homeUrl . 'app/place/rest' ?>" class="dropdown-item"><i class="icon-comment-discussion"></i> Nghỉ ngơi</a>
+                    <a href="<?= Yii::$app->homeUrl . 'app/place/rest' ?>" class="dropdown-item"><i class="icon-bed2"></i> Nghỉ ngơi</a>
                 </div>
             </li>
             <li class="nav-item">

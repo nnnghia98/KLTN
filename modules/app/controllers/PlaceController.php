@@ -5,12 +5,20 @@ namespace app\modules\app\controllers;
 use app\modules\cms\services\DestinationService;
 use yii\web\Controller;
 
-class DestinationController extends Controller
+class PlaceController extends Controller
 {
     public $enableCsrfValidation = false;
     /**-------------VIEWS-----------------*/
-    public function actionIndex() {
-        return $this->render('index');
+    public function actionVisit() {
+        return $this->render('visit');
+    }
+
+    public function actionFood() {
+        return $this->render('food');
+    }
+
+    public function actionRest() {
+        return $this->render('rest');
     }
 
     /**-------------API-----------------*/

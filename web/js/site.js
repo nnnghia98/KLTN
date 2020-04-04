@@ -19,7 +19,7 @@ $(function () {
 
 function fixImageActionsHeight() {
     var cardImgActions = $('.card-img-actions');
-    cardImgActions.height(cardImgActions.width() * 5 / 4);
+    cardImgActions.height(cardImgActions.width() * 2 / 3);
 }
 
 $(window).on('resize', function() {
@@ -42,29 +42,6 @@ function formatStringDateTime(string) {
         return '0' + string;
     }
     return string;
-}
-
-function timeSince(timeStr) {
-    var date = new Date(timeStr),
-        timediff = Math.floor((new Date() - date) / 1000),
-        timestring,
-        remain;
-
-    var days = Math.floor(timediff / 86400);
-    remain = timediff % 86400;
-
-    var hours = Math.floor(remain / 3600);
-
-    remain = Math.floor(remain % 3600);
-    var mins = Math.floor(remain / 60);
-    var secs = Math.floor(remain % 60);
-
-    if (secs >= 0) timestring = secs + " seconds ago";
-    if (mins > 0) timestring = mins + " mins ago";
-    if (hours > 0) timestring = hours + " hours ago";
-    if (days > 0) timestring = days + " days ago";
-
-    return timestring;
 }
 
 Vue.use(Toasted, Option);
@@ -108,10 +85,10 @@ function getAvatarPath(avatar) {
     return path
 }
 
-function sendAjax(api, data, callback) {
+function sendAjax(api, data, type = 'POST', callback) {
     $.ajax({
         url: api,
-        type: 'POST',
+        type: type,
         data: data,
         success: function(resp) {
             callback(resp)

@@ -30,9 +30,8 @@ class UserController extends Controller
                 return $this->redirect(APPConfig::getUrl('user/my-plan'));
             }
 
-            $user['following'] = AuthService::CheckFollowingUser($user['id']);
-            $points = TravelSharingService::GetTravelSharingByUserId($user['id']);
-            return $this->render('pointclound', compact('user', 'points'));
+            
+            return $this->render('pointclound', compact('user'));
         }
         throw new NotFoundHttpException();
     }
