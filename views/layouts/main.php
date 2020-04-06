@@ -25,7 +25,9 @@ AppAsset::register($this);
     <title><?= CMSConfig::$CONFIG['siteName'] ?></title>
     <?php $this->head() ?>
     <script>
-        var APP = {};
+        var APP = {
+            root: '<?= Yii::$app->homeUrl ?>'
+        };
         new WOW().init();
     </script>
 </head>

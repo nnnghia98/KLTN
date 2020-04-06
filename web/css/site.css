@@ -157,17 +157,27 @@ a.desc:after {
 
 .vs__search, .vs__search:focus, .vs__selected{
     margin-top: 0;
+    border-radius: 1.25rem;
 }
 
 .vs__dropdown-toggle{
-    padding: .5rem 0;
+    padding: .5rem .1875rem;
+    border-radius: 1.25rem;
+}
+
+.vs--open .vs__dropdown-toggle {
+    border-radius: 1.25rem;
+}
+
+.card, .media-list-photo {
+    border-radius: .625rem;
 }
 
 .form-control {
     border-top-color: #ccc !important;
     border: 1px solid #ccc;
-    border-radius: .1875rem;
-    padding: .5rem;
+    border-radius: 1.25rem;
+    padding: .5rem .8125rem;
 }
 
 .form-control:focus {
@@ -177,8 +187,8 @@ a.desc:after {
 
 .input-group-append {
     margin-left: 0;
-    border-top-right-radius: .1875rem;
-    border-bottom-right-radius: .1875rem;
+    border-top-right-radius: 1.25rem;
+    border-bottom-right-radius: 1.25rem;
     cursor: pointer;
     transition: .5 all ease;
 }
@@ -188,9 +198,9 @@ a.desc:after {
 }
 
 .input-group-text {
-    padding: .5rem .625rem;
-    border-top-right-radius: .1875rem;
-    border-bottom-right-radius: .1875rem;
+    padding: .5rem .8125rem;
+    border-top-right-radius: 1.25rem;
+    border-bottom-right-radius: 1.25rem;
 }
 
 .media-list-photo {
@@ -222,7 +232,7 @@ a.desc:after {
 }
 .star-rating .front-stars {
     display: flex;
-    color: #FFBC0B;
+    color: var(--main-color-pink); /**#FFBC0B*/
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -231,4 +241,14 @@ a.desc:after {
 
 .star-rating .rating-number {
     font-size: 1rem;
+}
+
+.pagination .page-link {
+    background: var(--main-color-indigo);
+    transition: .5 all ease;
+    color: #fff;
+}
+
+.pagination .page-link:hover {
+    background: var(--main-color-pink);
 }

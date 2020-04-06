@@ -25,7 +25,7 @@ $pageData = [
                             <div class="input-group">
                                 <input type="text" class="form-control border-right-0" placeholder="Tên điểm đến" v-model="keyword">
                                 <span class="input-group-append" @click="getDestinations()">
-                                    <span class="input-group-text bg-secondary border-secondary text-white">
+                                    <span class="input-group-text bg-indigo-400 border-indigo-400 text-white">
                                         <i class="icon-search4"></i>
                                     </span>
                                 </span>
@@ -54,9 +54,9 @@ $pageData = [
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <a href="<?= APPConfig::getUrl('destination/map') ?>" class="btn btn-primary btn-labeled btn-labeled-left d-block">
-                        <b><i class="icon-map4"></i></b> Xem trên bản đồ
+                <div class="card-body d-flex justify-content-center">
+                    <a href="<?= APPConfig::getUrl('destination/map') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
+                        Xem trên bản đồ <i class="icon-map4 ml-2"></i>
                     </a>
                 </div>
             </div>
@@ -102,11 +102,7 @@ $pageData = [
                             </ul>
                         </div>
                         <div class="pagination-wrap" v-if="pagination.pages > 1">
-                            <ul class="pagination-separated justify-content-center twbs-separated pagination">
-                                <li class="page-item" v-for="(p, idx) in pagination.links" :class="p == 'current' ? 'active' : ''" @click="page = p">
-                                    <a href="#" class="page-link">{{ idx == 0 ? 'Trang đầu' : (idx == pagination.links.length - 1 ? 'Trang cuối' : (p == 'current' ? pagination.current : p)) }}</a>
-                                </li>
-                            </ul>
+                            <pagination :current="pagination.current" :pages="pagination.pages" @change="page = $event"></pagination>
                         </div>
                     </div>
                 </div>
@@ -117,6 +113,8 @@ $pageData = [
 
 <script>
     $(function() {
+        var url = window.location.href
+    console.log(url)
         var vm = new Vue({
             el: '#destination-page',
             data: {

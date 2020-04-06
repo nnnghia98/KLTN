@@ -139,3 +139,70 @@ Vue.component('rating-star-static', {
         <div class="rating-number ml-1 text-muted">({{ ratingFixed }})</div>
     </div>`
 })
+
+Vue.component('pagination', {
+    props: ['current', 'pages'],
+    data: function() {
+        return {
+            page: this.current
+        }
+    },
+    template: `
+    <ul class="pagination pagination-pager pagination-rounded justify-content-center">
+        <li class="page-item first" :class="page == 1 ? 'disabled' : ''"  @click="page = 1">
+            <span class="page-link">⇤</span>
+        </li>
+        <li class="page-item prev" :class="page == 1 ? 'disabled' : ''"  @click="page = --page < 1 ? 1 : page">
+            <span class="page-link">⇠</span>
+        </li>
+        <li class="page-item next" :class="page == pages ? 'disabled' : ''"  @click="page = ++page > pages ? pages : page">
+            <span class="page-link">⇢</span>
+        </li>
+        <li class="page-item last" :class="page == pages ? 'disabled' : ''" @click="page = pages">
+            <span class="page-link">⇥</span>
+        </li>
+    </ul>`,
+    watch: {
+        page: function() {
+            this.$emit('change', this.page);
+        }
+    }
+})
+
+Vue.component('pagination-summary', {
+    props: ['current', 'from', 'to', 'total'],
+    template: `
+    <h5 class="mb-0">
+        Trang {{ current }}: <b>{{ from }}</b> - <b>{{ to }}</b> trong <b>{{ total }}</b> kết quả
+    </h5>`
+})
+
+Vue.component('place', {
+    props: ['place'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `
+    <li>
+        <div class="media">
+            <div class="mr-2">
+                <a :href="root + '/app/place/visit/' + place.slug" class="media-list-photo">
+                    <img :src="root + '/uploads/' + place.thumbnail" height="150" width="225" :alt="place.name">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-title font-weight-bold">
+                    <a :href="root + '/app/place/visit/' + place.slug">{{ place.name }}</a>
+                </h4>
+                <h5 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h5>
+                <rating-star-static :rating="place.avg_rating"></rating-star-static>
+                <p class="text-muted"><i class="icon-comment mr-1"></i> {{ place.count_comment ? place.count_comment : 0 }}</p>
+            </div>
+            <div class="ml-1">
+                <a :href="root + '/app/place/map?type=visit&target=' + place.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
+            </div>
+        </div>
+    </li>`
+})

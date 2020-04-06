@@ -61,9 +61,9 @@ $pageData = [
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <a href="<?= APPConfig::getUrl('place/map?type=food') ?>" class="btn btn-primary btn-labeled btn-labeled-left d-block">
-                        <b><i class="icon-map4"></i></b> Xem trên bản đồ
+                <div class="card-body d-flex justify-content-center">
+                    <a href="<?= APPConfig::getUrl('place/map?type=food') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
+                        Xem trên bản đồ <i class="icon-map4 ml-2"></i>
                     </a>
                 </div>
             </div>
@@ -82,38 +82,15 @@ $pageData = [
                     </div>
                     <div class="available-data" v-else>
                         <div class="data-summary py-2 px-3">
-                            <h5 class="mb-0"><b>{{ pagination.from }}</b> - <b>{{ pagination.to }}</b> trong <b>{{ pagination.total }}</b> kết quả</h5>
+                            <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                         </div>
                         <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
-                                <li v-for="item in foods">
-                                    <div class="media">
-                                        <div class="mr-2">
-                                            <a :href="'<?= APPConfig::getUrl('place/food/') ?>' + item.slug" class="media-list-photo">
-                                                <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="150" width="225" :alt="item.name">
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h4 class="media-title font-weight-bold">
-                                                <a :href="'<?= APPConfig::getUrl('place/food/') ?>' + item.slug">{{ item.name }}</a>
-                                            </h4>
-                                            <h5 class="mb-0 text-muted"><i class="icon-location4 mr-1"></i>{{ item.address }}</h5>
-                                            <rating-star-static :rating="item.avg_rating"></rating-star-static>
-                                            <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
-                                        </div>
-                                        <div class="ml-1">
-                                            <a :href="'<?= APPConfig::getUrl('place/map?type=food&target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
-                                        </div>
-                                    </div>
-                                </li>
+                                <place v-for="item in foods" :place="item"></place>
                             </ul>
                         </div>
                         <div class="pagination-wrap" v-if="pagination.pages > 1">
-                            <ul class="pagination-separated justify-content-center twbs-separated pagination">
-                                <li class="page-item" v-for="(p, idx) in pagination.links" :class="p == 'current' ? 'active' : ''" @click="page = p">
-                                    <a href="#" class="page-link">{{ idx == 0 ? 'Trang đầu' : (idx == pagination.links.length - 1 ? 'Trang cuối' : (p == 'current' ? pagination.current : p)) }}</a>
-                                </li>
-                            </ul>
+                            <pagination :current="pagination.current" :pages="pagination.pages" @change="page = $event"></pagination>
                         </div>
                     </div>
                 </div>
