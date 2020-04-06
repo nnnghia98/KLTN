@@ -1,6 +1,19 @@
+:root {
+    --main-color-indigo: #5c6bc0;
+    --main-color-pink: #ec407a;
+}
 html,
 body {
     height: 100%;
+}
+
+a:not(.btn):hover {
+    color: var(--main-color-pink) !important;
+}
+
+a {
+    color: var(--main-color-indigo);
+    transition: .5 all ease;
 }
 
 .wrap {
@@ -122,8 +135,32 @@ a.desc:after {
     font-size: 1rem;
 }
 
-.navbar-brand img {
-    height: 2rem;
+::-webkit-scrollbar {
+    width: 10px;
+}
+  
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+  
+
+::-webkit-scrollbar-thumb {
+    background: #414852;
+}
+  
+
+::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/** CUSTOM CSS*/
+
+.vs__search, .vs__search:focus, .vs__selected{
+    margin-top: 0;
+}
+
+.vs__dropdown-toggle{
+    padding: .5rem 0;
 }
 
 .form-control {
@@ -169,4 +206,29 @@ a.desc:after {
 .media-list-photo:hover img {
     -webkit-transform: rotate(5deg) scale(1.2);
 	transform: rotate(5deg) scale(1.2);
+}
+
+.star-rating {
+    display: flex;
+    align-items: center;
+    font-size: 2.5em;
+    justify-content: left;
+}
+.star-rating .back-stars {
+    display: flex;
+    color: #ccc;
+    position: relative;
+    text-shadow: 1px 1px 2px #aaa;
+}
+.star-rating .front-stars {
+    display: flex;
+    color: #FFBC0B;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    transition: all .5s
+}
+
+.star-rating .rating-number {
+    font-size: 1rem;
 }

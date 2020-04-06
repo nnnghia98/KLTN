@@ -2,6 +2,9 @@
 
 use app\modules\app\APPConfig;
 use app\modules\app\PathConfig;
+use app\modules\contrib\gxassets\GxVueSelectAsset;
+
+GxVueSelectAsset::register($this);
 
 $pageData = [
     'pageTitle' => 'Địa điểm tham quan',
@@ -11,24 +14,30 @@ $pageData = [
 ?>
 <?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
 
-<div class="content container mt-3" id="visit-page">
+<div class="container mt-3" id="visit-page">
     <div class="row">
         <div class="col-md-4 sidebar-wrap">
             <div class="sidebar-header">
                 <h1 class="card-title font-weight-bold">Tìm kiếm</h1>
             </div>
+
             <div class="card sidebar-content">
                 <div class="card-body">
                     <div class="form-search" v-cloak>
                         <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control border-right-0" placeholder="Tên điạ điểm tham quan" v-model="keyword">
+                                <input type="text" class="form-control border-right-0" placeholder="Tên địa điểm tham quan" v-model="keyword">
                                 <span class="input-group-append" @click="getVisits()">
                                     <span class="input-group-text bg-secondary border-secondary text-white">
                                         <i class="icon-search4"></i>
                                     </span>
                                 </span>
                             </div>
+                        </div>    
+                        <hr>
+                        <div class="form-group">
+                            <label for="" class="font-weight-bold">Điểm đến</label> 
+                            <v-select :options="destinationCategories" :reduce="selected => selected.code" v-model="destination"></v-select>
                         </div>
                         <hr>
                         <div class="form-group">
@@ -51,6 +60,14 @@ $pageData = [
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <a href="<?= APPConfig::getUrl('place/map?type=visit') ?>" class="btn btn-primary btn-labeled btn-labeled-left d-block">
+                        <b><i class="icon-map4"></i></b> Xem trên bản đồ
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="col-md-8 data-wrap">
             <div class="data-header">
@@ -65,20 +82,29 @@ $pageData = [
                         <h4 class="font-weight-bold mb-0">Không có dữ liệu phù hợp</h4>
                     </div>
                     <div class="available-data" v-else>
+                        <div class="data-summary py-2 px-3">
+                            <h5 class="mb-0"><b>{{ pagination.from }}</b> - <b>{{ pagination.to }}</b> trong <b>{{ pagination.total }}</b> kết quả</h5>
+                        </div>
                         <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
                                 <li v-for="item in visits">
                                     <div class="media">
                                         <div class="mr-2">
-                                            <a :href="'<?= APPConfig::getUrl('visit/') ?>' + item.slug" class="media-list-photo">
+                                            <a :href="'<?= APPConfig::getUrl('place/visit/') ?>' + item.slug" class="media-list-photo">
                                                 <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="150" width="225" :alt="item.name">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('visit/') ?>' + item.slug">{{ item.name }}</a></h5>
-                                            {{ item.subtitle }}
-                                            <p class="text-muted"><i class="icon-bubble9 mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
+                                            <h4 class="media-title font-weight-bold">
+                                                <a :href="'<?= APPConfig::getUrl('place/visit/') ?>' + item.slug">{{ item.name }}</a>
+                                            </h4>
+                                            <h5 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ item.address }}</h5>
+                                            <rating-star-static :rating="item.avg_rating"></rating-star-static>
+                                            <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                         </div>
+                                        <div class="ml-1">
+											<a :href="'<?= APPConfig::getUrl('place/map?type=visit&target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
+										</div>
                                     </div>
                                 </li>
                             </ul>
@@ -99,23 +125,31 @@ $pageData = [
 
 <script>
     $(function() {
+        Vue.component('v-select', VueSelect.VueSelect);
         var vm = new Vue({
             el: '#visit-page',
             data: {
-                visits: null,
-                pagination: null,
+                visits: [],
+                pagination: {},
                 loading: true,
                 page: 1,
                 perpage: 5,
                 comment: 1,
                 rating: 0,
-                keyword: ''
+                keyword: '',
+                destination: 13,
+                destinationCategories: []
             },
             created: function() {
                 this.getVisits()
+                this.getDestinations()
             },
             watch: {
                 page: function() {
+                    this.getVisits()
+                },
+                
+                destination: function() {
                     this.getVisits()
                 }
             },
@@ -123,7 +157,7 @@ $pageData = [
                 getVisits: function() {
                     var _this = this
                     var api = '<?= APPConfig::getUrl('place/get-visit-list') ?>' +
-                        '?page=' + this.page + '&perpage=' + this.perpage + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
+                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
@@ -136,7 +170,18 @@ $pageData = [
                     })
                 },
 
+                getDestinations: function() {
+                    var _this = this
+                    var api = '<?= APPConfig::getUrl('destination/get-categories') ?>'
 
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if (resp.status) {
+                            _this.destinationCategories = resp.categories
+                        } else {
+                            toastMessage('error', 'Lỗi!')
+                        }
+                    })
+                }
             }
         })
     })

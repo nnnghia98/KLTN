@@ -13,6 +13,10 @@ class DestinationController extends Controller
         return $this->render('index');
     }
 
+    public function actionMap() {
+        return $this->render('map');
+    }
+
     /**-------------API-----------------*/
     public function actionGetList($page = 1, $perpage = 9, $keyword = '', $comment = 1, $rating = 0) {
         list($destinations, $pagination) = DestinationService::GetListAppPage($page, $perpage, $keyword, $comment, $rating);
@@ -21,14 +25,15 @@ class DestinationController extends Controller
             'destinations' => $destinations,
             'pagination' => $pagination
         ];
-        // if($destinations) {
-            
-        // } else {
-        //     $response = [
-        //         'status' => false,
-        //         'message' => DestinationService::$RESPONSE['ERROR_LIST'],
-        //     ];
-        // }
+        return $this->asJson($response);
+    }
+
+    public function actionGetCategories() {
+        $categories = DestinationService::GetCategories();
+        $response = [
+            'status' => true,
+            'categories' => $categories
+        ];
 
         return $this->asJson($response);
     }

@@ -15,7 +15,18 @@ $(function () {
             $(this).addClass('active');
         }
     });
+
+    $(window).scroll(function() {    // this will work when your window scrolled.
+        var height = $(window).scrollTop();  //getting the scrolling height of window
+        var navbar = $(".navbar")
+		if(height  > $(window).height() / 2) {
+			navbar.addClass('sticky');
+		} else{
+			navbar.removeClass('sticky');
+		}
+	});
 });
+
 
 function fixImageActionsHeight() {
     var cardImgActions = $('.card-img-actions');
@@ -98,3 +109,33 @@ function sendAjax(api, data, type = 'POST', callback) {
         }
     })
 }
+
+/**VUE COMPONENT */
+Vue.component('rating-star-static', {
+    props: ['rating'],
+    data: function() {
+        return {
+            ratingFixed: parseFloat(this.rating).toFixed(1),
+            percent: parseFloat(this.rating) / 5 * 100
+        }
+    },
+    template: `
+    <div class="star-rating">
+        <div class="back-stars my-1">
+            <i class="icon-star-full2" aria-hidden="true"></i>
+            <i class="icon-star-full2" aria-hidden="true"></i>
+            <i class="icon-star-full2" aria-hidden="true"></i>
+            <i class="icon-star-full2" aria-hidden="true"></i>
+            <i class="icon-star-full2" aria-hidden="true"></i>
+            
+            <div class="front-stars" :style="'width: ' + percent + '%'">
+                <i class="icon-star-full2" aria-hidden="true"></i>
+                <i class="icon-star-full2" aria-hidden="true"></i>
+                <i class="icon-star-full2" aria-hidden="true"></i>
+                <i class="icon-star-full2" aria-hidden="true"></i>
+                <i class="icon-star-full2" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div class="rating-number ml-1 text-muted">({{ ratingFixed }})</div>
+    </div>`
+})

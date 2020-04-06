@@ -11,12 +11,13 @@ $pageData = [
 ?>
 <?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
 
-<div class="content container mt-3" id="destination-page">
+<div class="container mt-3" id="destination-page">
     <div class="row">
         <div class="col-md-4 sidebar-wrap">
             <div class="sidebar-header">
                 <h1 class="card-title font-weight-bold">Tìm kiếm</h1>
             </div>
+
             <div class="card sidebar-content">
                 <div class="card-body">
                     <div class="form-search" v-cloak>
@@ -51,6 +52,14 @@ $pageData = [
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <a href="<?= APPConfig::getUrl('destination/map') ?>" class="btn btn-primary btn-labeled btn-labeled-left d-block">
+                        <b><i class="icon-map4"></i></b> Xem trên bản đồ
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="col-md-8 data-wrap">
             <div class="data-header">
@@ -65,6 +74,9 @@ $pageData = [
                         <h4 class="font-weight-bold mb-0">Không có dữ liệu phù hợp</h4>
                     </div>
                     <div class="available-data" v-else>
+                        <div class="data-summary py-2 px-3">
+                            <h5 class="mb-0"><b>{{ pagination.from }}</b> - <b>{{ pagination.to }}</b> trong <b>{{ pagination.total }}</b> kết quả</h5>
+                        </div>
                         <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
                                 <li v-for="item in destinations">
@@ -75,9 +87,15 @@ $pageData = [
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug">{{ item.name }}</a></h5>
-                                            {{ item.subtitle }}
-                                            <p class="text-muted"><i class="icon-bubble9 mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
+                                            <h4 class="media-title font-weight-bold">
+                                                <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug">{{ item.name }}</a>
+                                            </h4>
+                                            <h5 class="mb-0 text-muted">{{ item.subtitle }}</h5>
+                                            <rating-star-static :rating="item.avg_rating"></rating-star-static>
+                                            <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
+                                        </div>
+                                        <div class="ml-1">
+                                            <a :href="'<?= APPConfig::getUrl('place/destination?target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
                                         </div>
                                     </div>
                                 </li>

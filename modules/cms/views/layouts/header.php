@@ -12,18 +12,29 @@
 use app\modules\app\APPConfig;
 use app\modules\cms\CMSConfig;
 use app\modules\cms\services\AuthService;
-
 ?>
-<div class="navbar navbar-expand-md navbar-light navbar-static">
+
+<style>
+    .navbar-brand img {
+        height: 3rem;
+        transition: .5s all ease;
+    }
+
+    .navbar-nav-link {
+        color: #fff !important;
+        text-transform: uppercase;
+        transition: .5s all ease;
+    }
+</style>
+<div class="navbar navbar-expand-md navbar-light navbar-static bg-teal">
     <div class="navbar-brand p-2 wmin-250">
         <a class="sitename d-flex align-items-center" href="<?= Yii::$app->homeUrl ?>">
             <img src="<?= Yii::$app->homeUrl . 'resources/images/logo.png' ?>" alt="">
-            <span class="ml-1 font-weight-bold text-success text-uppercase">Travel Sharing</span>
         </a>
     </div>
     <div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-mobile" aria-expanded="true" id="navbar-toggle">
-            <i class="icon-menu7"></i>
+            <i class="icon-menu7 text-white"></i>
         </button>
     </div>
     <div class="collapse navbar-collapse" id="navbar-mobile">
@@ -72,16 +83,14 @@ use app\modules\cms\services\AuthService;
                     </a>
                 </li>
             <?php else : ?>
-                <li>
-                    <div class="nav-item dropdown dropdown-user">
-                        <a href="#" class="navbar-nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                            <span class="font-weight-bold"><?= AuthService::UserFullName() ?></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" style="z-index: 102">
-                            <a href="<?= APPConfig::getUrl('user/my-profile') ?>" class="dropdown-item"><i class="icon-user-plus"></i> Trang cá nhân</a>
-                            <div class="dropdown-divider my-0"></div>
-                            <a href="<?= Yii::$app->homeUrl ?>site/logout" class="dropdown-item"><i class="icon-switch2"></i> Đăng xuất</a>
-                        </div>
+                <li class="nav-item dropdown dropdown-user">
+                    <a href="#" class="navbar-nav-link d-flex align-items-center dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                        <h6 class="mb-0 font-weight-bold"><?= AuthService::UserFullName() ?></h6>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" style="z-index: 102">
+                        <a href="<?= APPConfig::getUrl('user/my-profile') ?>" class="dropdown-item"><i class="icon-user-plus"></i> Trang cá nhân</a>
+                        <div class="dropdown-divider my-0"></div>
+                        <a href="<?= Yii::$app->homeUrl ?>site/logout" class="dropdown-item"><i class="icon-switch2"></i> Đăng xuất</a>
                     </div>
                 </li>
             <?php endif; ?>

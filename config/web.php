@@ -8,6 +8,7 @@ $config = [
     'timeZone' => 'Asia/Ho_Chi_Minh',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'defaultRoute' => 'app/site',
     'layout' => 'main',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

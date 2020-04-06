@@ -2,6 +2,7 @@
 
 namespace app\modules\cms\services;
 
+use app\modules\cms\models\Destination;
 use app\modules\cms\services\InteractiveService;
 use yii\db\Query;
 
@@ -30,7 +31,7 @@ class DestinationService
                         ->from(['d' => 'destination'])
                         ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
                         ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
-                        ->andWhere(['like', 'name', $keyword]);
+                        ->andWhere(['like', 'LOWER(name)', strtolower($keyword)]);
         if($rating) {
             $query->andWhere(['>=', 'i.avg_rating', $rating]);
         }
@@ -46,5 +47,22 @@ class DestinationService
                         ->all();
         $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($destinations));
         return [$destinations, $pagination];
+    }
+
+    public static function GetCategories() {
+        $destinations = Destination::find()
+                        ->select(['id', 'name'])
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->orderBy('name')
+                        ->all();
+
+        $categories = [];
+        foreach($destinations as $d) {
+            array_push($categories, [
+                'label' => $d['name'],
+                'code' => $d['id']
+            ]);
+        }
+        return $categories;
     }
 }

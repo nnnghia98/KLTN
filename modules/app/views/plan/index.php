@@ -5,35 +5,24 @@ use app\modules\app\PathConfig;
 use app\modules\contrib\gxassets\GxVueSelectAsset;
 
 GxVueSelectAsset::register($this);
+
 $pageData = [
-    'pageTitle' => 'Địa điểm nghỉ ngơi',
-    'pageBreadcrumb' => 'Nghỉ ngơi',
-    'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/destination-header.jpg'
+    'pageTitle' => 'Cùng nhau chia sẻ lịch trình du lịch',
+    'pageBreadcrumb' => 'Lịch trình',
+    'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/plan-header.jpg'
 ];
 ?>
 <?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
 
-<div class="container mt-3" id="rest-page">
+<div class="container mt-3" id="plan-page">
     <div class="row">
         <div class="col-md-4 sidebar-wrap">
             <div class="sidebar-header">
                 <h1 class="card-title font-weight-bold">Tìm kiếm</h1>
             </div>
-
             <div class="card sidebar-content">
                 <div class="card-body">
                     <div class="form-search" v-cloak>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control border-right-0" placeholder="Tên địa điểm nghỉ ngơi" v-model="keyword">
-                                <span class="input-group-append" @click="getRests()">
-                                    <span class="input-group-text bg-secondary border-secondary text-white">
-                                        <i class="icon-search4"></i>
-                                    </span>
-                                </span>
-                            </div>
-                        </div>    
-                        <hr>    
                         <div class="form-group">
                             <label for="" class="font-weight-bold">Điểm đến</label> 
                             <v-select :options="destinationCategories" :reduce="selected => selected.code" v-model="destination"></v-select>
@@ -41,7 +30,7 @@ $pageData = [
                         <hr>
                         <div class="form-group">
                             <label for="" class="font-weight-bold">Đánh giá</label>
-                            <select class="form-control" v-model="rating" @change="getRests()">
+                            <select class="form-control" v-model="rating" @change="getPlans()">
                                 <option value="5">5 sao</option>
                                 <option value="4">Trên 4 sao</option>
                                 <option value="3">Trên 3 sao</option>
@@ -51,7 +40,7 @@ $pageData = [
                         <hr>
                         <div class="form-group">
                             <label for="" class="font-weight-bold">Bình luận</label>
-                            <select class="form-control" v-model="comment" @change="getRests()">
+                            <select class="form-control" v-model="comment" @change="getPlans()">
                                 <option value="1">Giảm dần</option>
                                 <option value="0">Tăng dần</option>
                             </select>
@@ -59,26 +48,21 @@ $pageData = [
                     </div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-body">
-                    <a href="<?= APPConfig::getUrl('place/map?type=rest') ?>" class="btn btn-primary btn-labeled btn-labeled-left d-block">
-                        <b><i class="icon-map4"></i></b> Xem trên bản đồ
-                    </a>
-                </div>
-            </div>
         </div>
         <div class="col-md-8 data-wrap">
             <div class="data-header">
-                <h1 class="card-title font-weight-bold">Danh sách khách sạn</h1>
+                <h1 class="card-title font-weight-bold">Danh sách lịch trình</h1>
             </div>
             <div class="card data-content pb-3">
                 <div class="loading-data d-flex justify-content-center p-3" style="height: 100vh" v-if="loading">
                     <div class="loading-content"><i class="icon-spinner2 spinner icon-2x"></i></div>
                 </div>
                 <div class="loaded-data" v-else>
-                    <div class="empty-data d-flex justify-content-center p-3" v-if="rests.length == 0">
-                        <h4 class="font-weight-bold mb-0">Không có dữ liệu phù hợp</h4>
+                    <div class="empty-data d-flex justify-content-center align-items-center flex-column p-3" v-if="plans.length == 0">
+                        <h4 class="font-weight-bold mb-0 text-center">Chưa có lịch trình nào được tạo</h4>
+                        <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-primary btn-labeled btn-labeled-left mt-4">
+                            <b><i class="icon-plus2"></i></b>Thêm lịch trình của bạn
+                        </a>
                     </div>
                     <div class="available-data" v-else>
                         <div class="data-summary py-2 px-3">
@@ -86,23 +70,17 @@ $pageData = [
                         </div>
                         <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
-                                <li v-for="item in rests">
+                                <li v-for="item in plans">
                                     <div class="media">
                                         <div class="mr-2">
-                                            <a :href="'<?= APPConfig::getUrl('place/rest/') ?>' + item.slug" class="media-list-photo">
+                                            <a :href="'<?= APPConfig::getUrl('plan/') ?>' + item.slug" class="media-list-photo">
                                                 <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="150" width="225" :alt="item.name">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <h4 class="media-title font-weight-bold">
-                                                <a :href="'<?= APPConfig::getUrl('place/rest/') ?>' + item.slug">{{ item.name }}</a>
-                                            </h4>
-                                            <h5 class="mb-0 text-muted"><i class="icon-location4 mr-1"></i>{{ item.address }}</h5>
-                                            <rating-star-static :rating="item.avg_rating"></rating-star-static>
+                                            <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('plan/') ?>' + item.slug">{{ item.name }}</a></h5>
+                                            {{ item.subtitle }}
                                             <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
-                                        </div>
-                                        <div class="ml-1">
-                                            <a :href="'<?= APPConfig::getUrl('place/map?type=rest&target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
                                         </div>
                                     </div>
                                 </li>
@@ -126,45 +104,44 @@ $pageData = [
     $(function() {
         Vue.component('v-select', VueSelect.VueSelect);
         var vm = new Vue({
-            el: '#rest-page',
+            el: '#plan-page',
             data: {
-                rests: [],
+                plans: [],
                 pagination: {},
                 loading: true,
                 page: 1,
                 perpage: 5,
                 comment: 1,
                 rating: 0,
-                keyword: '',
                 destination: 13,
                 destinationCategories: []
             },
             created: function() {
-                this.getRests()
+                this.getPlans()
                 this.getDestinations()
             },
             watch: {
                 page: function() {
-                    this.getRests()
+                    this.getPlans()
                 },
 
                 destination: function() {
-                    this.getRests()
+                    this.getPlans()
                 }
             },
             methods: {
-                getRests: function() {
+                getPlans: function() {
                     var _this = this
-                    var api = '<?= APPConfig::getUrl('place/get-rest-list') ?>' +
-                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
+                    var api = '<?= APPConfig::getUrl('plan/get-list') ?>' +
+                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&comment=' + this.comment + '&rating=' + this.rating
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
-                            _this.rests = resp.rests
+                            _this.plans = resp.plans
                             _this.pagination = resp.pagination
                             _this.loading = false
                         } else {
-                            toastMessage('error', resp.message)
+                            toastMessage('error', 'Lỗi!')
                         }
                     })
                 },
