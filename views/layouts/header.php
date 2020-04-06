@@ -49,7 +49,7 @@ use app\modules\cms\services\AuthService;
 
     .sticky {
         position: fixed;
-        background: #414852;
+        background: #5c6bc0; /**#414852 */
     }
 
     @media (min-width: 768px) {

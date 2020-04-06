@@ -181,7 +181,8 @@ Vue.component('place', {
     props: ['place'],
     data: function() {
         return {
-            root: APP.root
+            root: APP.root,
+            type: this.place.place_type_id == 1 ? 'visit' : (this.place.place_type_id == 2 ? 'food' : 'rest')
         }
     },
     template: `
@@ -196,12 +197,12 @@ Vue.component('place', {
                 <h4 class="media-title font-weight-bold">
                     <a :href="root + '/app/place/visit/' + place.slug">{{ place.name }}</a>
                 </h4>
-                <h5 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h5>
+                <h6 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h6>
                 <rating-star-static :rating="place.avg_rating"></rating-star-static>
                 <p class="text-muted"><i class="icon-comment mr-1"></i> {{ place.count_comment ? place.count_comment : 0 }}</p>
             </div>
             <div class="ml-1">
-                <a :href="root + '/app/place/map?type=visit&target=' + place.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
+                <a :href="root + '/app/place/' + type + '-map?target=' + place.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
             </div>
         </div>
     </li>`

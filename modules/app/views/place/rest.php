@@ -27,7 +27,7 @@ $pageData = [
                             <div class="input-group">
                                 <input type="text" class="form-control border-right-0" placeholder="Tên địa điểm nghỉ ngơi" v-model="keyword">
                                 <span class="input-group-append" @click="getRests()">
-                                    <span class="input-group-text bg-secondary border-secondary text-white">
+                                    <span class="input-group-text bg-indigo-400 border-indigo-400 text-white">
                                         <i class="icon-search4"></i>
                                     </span>
                                 </span>
@@ -62,7 +62,7 @@ $pageData = [
 
             <div class="card">
                 <div class="card-body d-flex justify-content-center">
-                    <a href="<?= APPConfig::getUrl('place/map?type=rest') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
+                    <a href="<?= APPConfig::getUrl('place/rest-map') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
                         Xem trên bản đồ <i class="icon-map4 ml-2"></i>
                     </a>
                 </div>
@@ -84,10 +84,13 @@ $pageData = [
                         <div class="data-summary py-2 px-3">
                             <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                         </div>
-                        <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
+                        <div class="media flex-column flex-sm-row mt-0" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
                                 <place v-for="item in rests" :place="item"></place>
                             </ul>
+                        </div>
+                        <div class="data-summary py-2 px-3 mb-3">
+                            <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                         </div>
                         <div class="pagination-wrap" v-if="pagination.pages > 1">
                             <pagination :current="pagination.current" :pages="pagination.pages" @change="page = $event"></pagination>

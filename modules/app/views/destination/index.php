@@ -75,31 +75,34 @@ $pageData = [
                     </div>
                     <div class="available-data" v-else>
                         <div class="data-summary py-2 px-3">
-                            <h5 class="mb-0"><b>{{ pagination.from }}</b> - <b>{{ pagination.to }}</b> trong <b>{{ pagination.total }}</b> kết quả</h5>
+                            <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                         </div>
-                        <div class="media flex-column flex-sm-row mt-0 mb-3" v-cloak>
+                        <div class="media flex-column flex-sm-row mt-0" v-cloak>
                             <ul class="media-list media-list-linked media-list-bordered w-100">
                                 <li v-for="item in destinations">
                                     <div class="media">
                                         <div class="mr-2">
-                                            <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug" class="media-list-photo">
+                                            <a :href="'<?= APPConfig::getUrl('destination/detail/') ?>' + item.slug" class="media-list-photo">
                                                 <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="150" width="225" :alt="item.name">
                                             </a>
                                         </div>
                                         <div class="media-body">
                                             <h4 class="media-title font-weight-bold">
-                                                <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug">{{ item.name }}</a>
+                                                <a :href="'<?= APPConfig::getUrl('destination/detail/') ?>' + item.slug">{{ item.name }}</a>
                                             </h4>
-                                            <h5 class="mb-0 text-muted">{{ item.subtitle }}</h5>
+                                            <h6 class="mb-0 text-muted">{{ item.subtitle }}</h6>
                                             <rating-star-static :rating="item.avg_rating"></rating-star-static>
                                             <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                         </div>
                                         <div class="ml-1">
-                                            <a :href="'<?= APPConfig::getUrl('place/destination?target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
+                                            <a :href="'<?= APPConfig::getUrl('destination/map?target=') ?>' + item.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
                                         </div>
                                     </div>
                                 </li>
                             </ul>
+                        </div>
+                        <div class="data-summary py-2 px-3 mb-3">
+                            <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                         </div>
                         <div class="pagination-wrap" v-if="pagination.pages > 1">
                             <pagination :current="pagination.current" :pages="pagination.pages" @change="page = $event"></pagination>

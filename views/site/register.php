@@ -19,18 +19,21 @@ use yii\authclient\widgets\AuthChoice;
         color: #999;
         font-size: .75rem !important;
     }
+
+    #registerform-password {
+        border-radius: 1.25rem;
+    }
 </style>
 <div class="content d-flex justify-content-center align-items-center page-register">
     <?php $form = ActiveForm::begin([
         'id' => 'register-form'
     ]) ?>
     <div class="card card-body login-form border-top-primary" style="width: 364px;">
-        <div class="text-center">
-            <a href="<?= Yii::$app->homeUrl ?>" class="mb-2 d-block">
-                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo.png" style="max-width: 120px">
+        <div class="text-center my-3">
+            <a href="<?= Yii::$app->homeUrl ?>" class="d-block">
+                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo-color.png" style="max-width: 300px">
             </a>
-            <h4 class="font-weight-bold text-uppercase mb-1">Travel Sharing</h4>
-            <h5 class="font-weight-bold text-uppercase">Đăng ký tài khoản</h5>
+            <h4 class="font-weight-bold text-uppercase text-indigo-400 mt-3">Đăng ký tài khoản</h4>
         </div>
 
         <div class="form-group text-left">
@@ -51,8 +54,8 @@ use yii\authclient\widgets\AuthChoice;
             <?= $form->field($model, 'cpassword')->textInput(['placeholder' => 'Xác nhận mật khẩu', 'type' => 'password'])->label(false) ?>
         </div>
 
-        <div class="form-group text-center">
-            <button type="submit" class="btn btn-primary btn-block text-uppercase font-weight-bold">Đăng ký<i class="icon-user-plus ml-2"></i></button>
+        <div class="form-group text-center mt-3">
+            <button type="submit" class="btn btn-block bg-pink-400 rounded-round">Đăng ký<i class="icon-user-plus ml-2"></i></button>
         </div>
 
         <div class="form-group text-center text-muted content-divider">
@@ -75,7 +78,7 @@ use yii\authclient\widgets\AuthChoice;
 
         <div class="content-group">
             <div class="text-center">
-                <p class="display-block">Chưa có tài khoản? <a href="login" class="font-weight-bold">Đăng nhập</a></p>
+                <h6 class="display-block">Chưa có tài khoản? <a href="login" class="font-weight-bold">Đăng nhập</a></h6>
             </div>
         </div>
 

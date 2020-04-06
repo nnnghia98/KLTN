@@ -46,6 +46,12 @@ use app\modules\app\APPConfig;
             .sidebar-toggle:hover {
                 background: #f0f0f0 !important;
             }
+    
+    .media-list-photo img {
+        height: 35px !important;
+        width: 50px !important;
+    }
+
     #map {
         z-index: 0;
     }
@@ -111,31 +117,35 @@ use app\modules\app\APPConfig;
     function initLayer(data) {
         removeLayerExist()
 
-        var markers = [], icon, marker
+        var markers = [], icon, marker, bounds
         data.forEach(item => {
-            icon = customIcon()
+            icon = customIcon(item.place_type_id)
             marker = L.marker([item.lat, item.lng], {icon: icon}).bindPopup(markerPopup(item))
             marker.ID = item.id
-            DATA.layers.overlay['destination'].addLayer(marker)
+            DATA.layers.overlay['place'].addLayer(marker)
         })
+        
+
+        bounds = DATA.layers.overlay['place'].getBounds()
+        DATA.map.fitBounds(bounds, {padding: [50, 50]})
     }
 
     function removeLayerExist() {
-        if(DATA.map.hasLayer(DATA.layers.overlay['destination'])) {
-            DATA.layers.overlay['destination'].eachLayer(function(layer) {
-                DATA.layers.overlay['destination'].removeLayer(layer)
+        if(DATA.map.hasLayer(DATA.layers.overlay['place'])) {
+            DATA.layers.overlay['place'].eachLayer(function(layer) {
+                DATA.layers.overlay['place'].removeLayer(layer)
             })
         } else {
-            DATA.layers.overlay['destination'] = L.featureGroup().addTo(DATA.map)
+            DATA.layers.overlay['place'] = L.featureGroup().addTo(DATA.map)
         }
     }
 
     function markerPopup(target) {
-        var html = '<div class="destination-popup d-flex flex-column align-items-center">' +
+        var html = '<div class="place-popup d-flex flex-column align-items-center">' +
             '<h4 class="font-weight-bold text-indigo-400 text-center">' +
-                '<a href="<?= APPConfig::getUrl('destination/detail/') ?>' + target.slug + '">' + target.name + '</a>' +
+                '<a href="<?= APPConfig::getUrl('place/detail/') ?>' + target.slug + '">' + target.name + '</a>' +
             '</h4>' +
-            '<h6 class="text-muted text-center">' + target.subtitle + '</h6>' +
+            '<h6 class="text-muted text-center"><i class="icon-home5 mr-1"></i>' + target.address + '</h6>' +
             '<div class="destination-thumbnail overflow-hidden" style="border-radius: .625rem">' +
                 '<img src="<?= Yii::$app->homeUrl . 'uploads/' ?>' + target.thumbnail + '" width="225" height="150">' +
             '</div>'
@@ -144,9 +154,10 @@ use app\modules\app\APPConfig;
         return html
     }
 
-    function customIcon() {
+    function customIcon(type) {
+        var iconName = type == 1 ? 'visit' : (type == 2 ? 'food' : 'rest') 
         return L.icon({
-            iconUrl: '<?= Yii::$app->homeUrl . 'resources/images/marker-destination.png' ?>',
+            iconUrl: '<?= Yii::$app->homeUrl . 'resources/images/marker-' ?>' + iconName + '.png',
             iconSize: [40, 40],
             iconAnchor: [20, 40],
             popupAnchor: [0, -30]
