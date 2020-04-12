@@ -68,7 +68,7 @@
                 <h4 class="font-weight-bold mt-3 mb-4">Contact</h4>
                 <ul class="list-unstyled">
                     <li>
-                        <h5 class="mb-0"><i class="icon-location4 mr-2"></i>Địa chỉ xxx</h5>
+                        <h5 class="mb-0"><i class="icon-location4 mr-2"></i>Địa chỉ Lĩnh Nam - Hoàng Mai - Hà Nội</h5>
                     </li>
                     <li>
                         <h5 class="mb-0"><i class="icon-phone2 mr-2"></i>09xx xxx xxx</h5>
