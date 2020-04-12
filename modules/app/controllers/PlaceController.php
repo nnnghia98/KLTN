@@ -14,14 +14,25 @@ class PlaceController extends Controller
         return $this->render('visit');
     }
 
+    public function actionVisitMap() {
+        return $this->render('visit-map');
+    }
+
     public function actionFood() {
         return $this->render('food');
+    }
+
+    public function actionFoodMap() {
+        return $this->render('food-map');
     }
 
     public function actionRest() {
         return $this->render('rest');
     }
 
+    public function actionRestMap() {
+        return $this->render('rest-map');
+    }
  
     /**-------------API-----------------*/
     public function actionGetFoodList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $comment = 1, $rating = 0) {

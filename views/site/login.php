@@ -33,12 +33,11 @@ AppAsset::register($this);
         'id' => 'login-form',
     ]); ?>
     <div class="card card-body login-form border-top-primary" style="width: 364px;">
-        <div class="text-center">
-            <a href="<?= Yii::$app->homeUrl ?>" class="mb-2 d-block">
-                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo.png" style="max-width: 120px">
+        <div class="text-center my-3">
+            <a href="<?= Yii::$app->homeUrl ?>" class="d-block">
+                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo-color.png" style="max-width: 300px">
             </a>
-            <h4 class="font-weight-bold text-uppercase mb-1">Travel Sharing</h4>
-            <h5 class="font-weight-bold text-uppercase">Đăng nhập</h5>
+            <h4 class="font-weight-bold text-uppercase text-indigo-400 mt-3">Đăng nhập</h4>
         </div>
 
         <div class="form-group text-left">
@@ -49,12 +48,12 @@ AppAsset::register($this);
             <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Mật khẩu'])->label(false) ?>
         </div>
 
-        <div class="form-group d-flex align-items-center">
+        <!-- <div class="form-group d-flex align-items-center">
             <a href="<?= Yii::$app->homeUrl . 'site/forgot-password' ?>" class="ml-auto">Quên mật khẩu?</a>
-        </div>
+        </div> -->
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block text-uppercase font-weight-bold">Đăng nhập<i class="icon-circle-right2 ml-2"></i></button>
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-block bg-pink-400 rounded-round">Đăng nhập<i class="icon-circle-right2 ml-2"></i></button>
         </div>
 
         <div class="form-group text-center text-muted content-divider">
@@ -77,7 +76,7 @@ AppAsset::register($this);
 
         <div class="content-group">
             <div class="text-center">
-                <p class="display-block">Chưa có tài khoản? <a href="register" class="font-weight-bold">Đăng ký</a></p>
+                <h6 class="display-block">Chưa có tài khoản? <a href="register" class="font-weight-bold">Đăng ký</a></h6>
             </div>
         </div>
 

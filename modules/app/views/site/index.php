@@ -119,3 +119,11 @@
     </div>
 
 </div>
+<<<<<<< HEAD
+=======
+
+<script>
+    var url = window.location.href
+    console.log(url)
+</script>
+>>>>>>> 6e54fa48413ce151dc9b3e857048c2ffe4df2277

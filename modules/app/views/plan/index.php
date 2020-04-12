@@ -59,9 +59,9 @@ $pageData = [
                 </div>
                 <div class="loaded-data" v-else>
                     <div class="empty-data d-flex justify-content-center align-items-center flex-column p-3" v-if="plans.length == 0">
-                        <h4 class="font-weight-bold mb-0 text-center">Chưa có lịch trình nào được tạo</h4>
-                        <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-primary btn-labeled btn-labeled-left mt-4">
-                            <b><i class="icon-plus2"></i></b>Thêm lịch trình của bạn
+                        <h4 class="font-weight-bold mb-5 text-center">Chưa có lịch trình nào được tạo</h4>
+                        <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-outline border-pink-400 text-pink-400 bg-pink-400 rounded-round">
+                            Thêm lịch trình của bạn<i class="icon-plus2 ml-2"></i>
                         </a>
                     </div>
                     <div class="available-data" v-else>

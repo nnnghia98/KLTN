@@ -1,28 +1,34 @@
 <?php
 use app\modules\app\APPConfig;
+use app\modules\contrib\gxassets\GxVueSelectAsset;
 use app\modules\contrib\gxassets\GxLeafletAsset;
 
 GxLeafletAsset::register($this);
+GxVueSelectAsset::register($this);
 ?>
-<div id="destination-map-page" class="map-page">
+<div id="rest-map-page" class="map-page">
     <div class="map-wrap d-flex flex-1 position-relative h-100">
         <div class="map-sidebar h-100 bg-white show" id="map-sidebar">
             <div class="position-relative h-100">
                 <div class="sidebar-content h-100 overflow-auto">
                     <div class="sidebar-header p-3">
-                        <h4 class="mb-0 font-weight-bold"><a href="<?= APPConfig::getUrl('destination') ?>"><i class="icon-circle-left2 mr-2"></i></a>Bản đồ điểm đến</h4>
+                        <h4 class="mb-0 font-weight-bold"><a href="<?= APPConfig::getUrl('place/rest') ?>"><i class="icon-circle-left2 mr-2"></i></a>Bản đồ địa điểm nghỉ ngơi</h4>
                     </div>
                     <hr class="my-1">
                     <div class="form-search p-3">
-                        <div class="form-group mb-0">
+                        <div class="form-group">
                             <div class="input-group">
-                                <input type="text" class="form-control border-right-0" placeholder="Tên điểm đến" v-model="keyword">
-                                <span class="input-group-append" @click="getDestinations()">
+                                <input type="text" class="form-control border-right-0" placeholder="Tên địa điểm nghỉ ngơi" v-model="keyword">
+                                <span class="input-group-append" @click="getRests()">
                                     <span class="input-group-text bg-indigo-400 border-indigo-400 text-white">
                                         <i class="icon-search4"></i>
                                     </span>
                                 </span>
                             </div>
+                        </div> 
+                        <div class="form-group">
+                            <label for="" class="font-weight-bold">Điểm đến</label> 
+                            <v-select :options="destinationCategories" :reduce="selected => selected.code" v-model="destination"></v-select>
                         </div>
                     </div>
                     <hr class="my-1">
@@ -32,35 +38,16 @@ GxLeafletAsset::register($this);
                                 <div class="loading-content"><i class="icon-spinner2 spinner icon-2x"></i></div>
                             </div>
                             <div class="loaded-data" v-else>
-                                <div class="empty-data d-flex justify-content-center p-3" v-if="destinations.length == 0">
+                                <div class="empty-data d-flex justify-content-center p-3" v-if="rests.length == 0">
                                     <h4 class="font-weight-bold mb-0">Không có dữ liệu phù hợp</h4>
                                 </div>
                                 <div class="available-data" v-else>
                                     <div class="data-summary py-2 px-3">
-                                        <h5 class="mb-0"><b>{{ pagination.from }}</b> - <b>{{ pagination.to }}</b> trong <b>{{ pagination.total }}</b> kết quả</h5>
+                                        <pagination-summary :current="pagination.current" :from="pagination.from" :to="pagination.to" :total="pagination.total"></pagination-summary>
                                     </div>
                                     <div class="media flex-column flex-sm-row mt-0" v-cloak>
                                         <ul class="media-list media-list-linked media-list-bordered w-100">
-                                            <li v-for="item in destinations">
-                                                <div class="media">
-                                                    <div class="mr-2">
-                                                        <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug" class="media-list-photo">
-                                                            <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="35" width="50" :alt="item.name">
-                                                        </a>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <h4 class="media-title font-weight-bold">
-                                                            <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug">{{ item.name }}</a>
-                                                        </h4>
-                                                        <h6 class="mb-0 text-muted">{{ item.subtitle }}</h6>
-                                                        <rating-star-static :rating="item.avg_rating"></rating-star-static>
-                                                        <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
-                                                    </div>
-                                                    <div class="ml-1">
-                                                        <button class="btn btn-sm btn-icon btn-outline-primary" @click="zoomToDestination(item)"><i class="icon-location4"></i></a></button>
-                                                    </div>
-                                                </div>
-                                            </li>
+                                            <place v-for="item in rests" :place="item"></place>
                                         </ul>
                                     </div>
                                     <div class="data-summary py-2 px-3 mb-3">
@@ -87,52 +74,72 @@ GxLeafletAsset::register($this);
 <?php include('map_ext.php') ?>
 <script>
     $(function() {
+        Vue.component('v-select', VueSelect.VueSelect)
         var vm = new Vue({
-            el: '#destination-map-page',
+            el: '#rest-map-page',
             data: {
-                destinations: null,
-                pagination: null,
+                rests: [],
+                pagination: {},
                 loading: true,
                 page: 1,
                 perpage: 20,
+                keyword: '',
                 comment: 1,
                 rating: 0,
-                keyword: ''
+                destination: 13,
+                destinationCategories: []
             },
             created: function() {
                 var _this = this
                 _this.$nextTick(function() {
                     initMap()
+                    _this.getRests()
                     _this.getDestinations()
                 })
-                
             },
             watch: {
                 page: function() {
-                    this.getDestinations()
+                    this.getRests()
+                },
+
+                destination: function() {
+                    this.getRests()
                 }
             },
             methods: {
-                getDestinations: function() {
+                getRests: function() {
                     var _this = this
-                    var api = '<?= APPConfig::getUrl('destination/get-list') ?>' +
-                        '?page=' + this.page + '&perpage=' + this.perpage + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
+                    var api = '<?= APPConfig::getUrl('place/get-rest-list') ?>' +
+                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
-                            _this.destinations = resp.destinations
+                            _this.rests = resp.rests
                             _this.pagination = resp.pagination
-                            initLayer(_this.destinations)
+                            initLayer(_this.rests)
                             _this.loading = false
                         } else {
                             toastMessage('error', resp.message)
                         }
                     })
                 },
+                
+                getDestinations: function() {
+                    var _this = this
+                    var api = '<?= APPConfig::getUrl('destination/get-categories') ?>'
+
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if (resp.status) {
+                            _this.destinationCategories = resp.categories
+                        } else {
+                            toastMessage('error', 'Lỗi!')
+                        }
+                    })
+                },
 
                 zoomToDestination: function(target) {
                     DATA.map.flyTo([target.lat, target.lng], 9)
-                    DATA.layers.overlay['destination'].eachLayer(function(layer) {
+                    DATA.layers.overlay['place'].eachLayer(function(layer) {
                         if(layer.ID == target.id) {
                             layer.openPopup()
                         }
