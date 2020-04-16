@@ -78,7 +78,7 @@ use yii\authclient\widgets\AuthChoice;
 
         <div class="content-group">
             <div class="text-center">
-                <h6 class="display-block">Chưa có tài khoản? <a href="login" class="font-weight-bold">Đăng nhập</a></h6>
+                <h6 class="display-block">Đã có tài khoản? <a href="login" class="font-weight-bold">Đăng nhập</a></h6>
             </div>
         </div>
 

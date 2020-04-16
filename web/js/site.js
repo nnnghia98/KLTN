@@ -1,6 +1,5 @@
-
-$(function () {
-    $('.navbar-nav .nav-item a').each(function () {
+$(function() {
+    $('.navbar-nav .nav-item a').each(function() {
         if ($(this).prop('href') == window.location.href) {
             if ($(this).hasClass('navbar-nav-link')) {
                 $(this).addClass('active');
@@ -10,21 +9,21 @@ $(function () {
         }
     });
 
-    $('.navbar-nav .nav-item a.navbar-nav-link').each(function () {
+    $('.navbar-nav .nav-item a.navbar-nav-link').each(function() {
         if ($(this).prop('href') == window.location.href) {
             $(this).addClass('active');
         }
     });
 
-    $(window).scroll(function() {    // this will work when your window scrolled.
-        var height = $(window).scrollTop();  //getting the scrolling height of window
+    $(window).scroll(function() { // this will work when your window scrolled.
+        var height = $(window).scrollTop(); //getting the scrolling height of window
         var navbar = $(".navbar")
-		if(height  > $(window).height() / 2) {
-			navbar.addClass('sticky');
-		} else{
-			navbar.removeClass('sticky');
-		}
-	});
+        if (height > $(window).height() / 2) {
+            navbar.addClass('sticky');
+        } else {
+            navbar.removeClass('sticky');
+        }
+    });
 });
 
 
@@ -37,25 +36,8 @@ $(window).on('resize', function() {
     fixImageActionsHeight();
 });
 
-function formatTime(time) {
-    var created_at = new Date(time);
-    var formatted_date = formatStringDateTime(created_at.getDate())
-        + "-" + formatStringDateTime((created_at.getMonth() + 1))
-        + "-" + formatStringDateTime(created_at.getFullYear())
-        + " " + formatStringDateTime(created_at.getHours())
-        + ":" + formatStringDateTime(created_at.getMinutes())
-        + ":" + formatStringDateTime(created_at.getSeconds());
-    return formatted_date;
-};
-
-function formatStringDateTime(string) {
-    if (string.toString().length === 1) {
-        return '0' + string;
-    }
-    return string;
-}
-
 Vue.use(Toasted, Option);
+
 function toastMessage(type, message) {
     Vue.toasted.show(message, {
         type: type,
@@ -65,30 +47,10 @@ function toastMessage(type, message) {
     });
 };
 
-function substringMatcher(words) {
-    return function (q, cb) {
-        var matches, substrRegex;
-        matches = [];
-        substrRegex = new RegExp(q, 'i');
-        $.each(words, function (i, word) {
-            if (substrRegex.test(word)) {
-                matches.push(word);
-            }
-        });
-        cb(matches);
-    };
-};
-
-function reverseDate(date) {
-    var reverse = date.split("-").reverse().join("/");
-    return reverse;
-}
-
-function offset(el) {
-    var rect = el.parent(),
-    scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-    scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+function formatDate(date) {
+    if (!date) return null
+    var [year, month, day] = date.split('-')
+    return `${day}/${month}/${year}`
 }
 
 function getAvatarPath(avatar) {

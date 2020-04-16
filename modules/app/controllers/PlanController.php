@@ -2,7 +2,9 @@
 
 namespace app\modules\app\controllers;
 
+use app\modules\app\APPConfig;
 use app\modules\cms\services\PlanService;
+use Yii;
 use yii\web\Controller;
 
 class PlanController extends Controller
@@ -11,6 +13,29 @@ class PlanController extends Controller
     /**-------------VIEWS-----------------*/
     public function actionIndex() {
         return $this->render('index');
+    }
+
+    public function actionCreate() {
+        $request = Yii::$app->request;
+
+        if($request->isPost) {
+            $slug = PlanService::Create($request->post());
+
+            if($slug) {
+                return $this->redirect(APPConfig::getUrl('plan/edit/' . $slug));
+            } else {
+                Yii::$app->session->setFlash('error', PlanService::$RESPONSE['CREATE_ERROR']);
+            }
+        }
+        return $this->render('create');
+    }
+
+    public function actionEdit($slug) {
+        return $this->render('edit');
+    }
+
+    public function actionDuplicate($slug = null) {
+        return $this->render('duplicate');
     }
 
     /**-------------API-----------------*/
