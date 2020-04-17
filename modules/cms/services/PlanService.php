@@ -4,6 +4,8 @@ namespace app\modules\cms\services;
 
 use app\modules\cms\models\Plan;
 use app\modules\cms\services\InteractiveService;
+use DateTime;
+use Yii;
 use yii\db\Query;
 
 class PlanService
@@ -23,6 +25,8 @@ class PlanService
         'CREATE_ERROR' => 'Không thể tạo lịch trình'
     ];
 
+    public static $HERE_API_ID = 'gRqLa6YYLXTqvoTTUhiT';
+    public static $HERE_API_KEY = 'hPtC4kp3SDaqlFsNbcT_zPpyknvCfWEdcxejzcUk8zI';
     public static $OBJECT_TYPE = 'app\modules\cms\models\Plan';
 
     public static function GetListAppPage($page, $perpage, $destination, $comment, $rating) {
@@ -46,12 +50,20 @@ class PlanService
         list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
                         
         $plans = $query->select(['p.*', 'i.*'])
-                        ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
-                        ->limit($limit)
-                        ->offset($offset)
-                        ->all();
+                    ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
+                    ->limit($limit)
+                    ->offset($offset)
+                    ->all();
         $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($plans));
         return [$plans, $pagination];
+    }
+
+    public static function GetPlanBySlug($slug) {
+        $plan = Plan::find()
+                    ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                    ->andWhere(['slug' => $slug])
+                    ->one();
+        return $plan;
     }
 
     public static function Create($data)
@@ -60,22 +72,19 @@ class PlanService
         $model->load($data);
 
         $desitnation = DestinationService::GetDestinationById($model->destination_id);
-
         $totalDay = self::CalculateTotalDayFromStartAndEnd($model->date_start, $model->date_end);
         $model->slug = SiteService::uniqid();
         $model->status = self::$STATUS['ACTIVE'];
         $model->delete = self::$DELETE['ALIVE'];
-        $model->deleted = self::$ALIVE;
-        $model->name = self::GeneratePlanName($model->id_destination, $totalDay);
+        $model->name = self::GeneratePlanName($desitnation->name, $totalDay);
         $model->total_day = $totalDay;
         $model->created_by = Yii::$app->user->id;
-        $model->date_start = date("Y-m-d", strtotime($model->date_start));
-        $model->date_end = date("Y-m-d", strtotime($model->date_end));
+        $model->thumbnail = $desitnation->thumbnail;
+        $model->viewed = 0;
         
         if($model->save()) {
-            return $model;
+            return $model->slug;
         }
-
         return false;
     }
 
@@ -86,8 +95,7 @@ class PlanService
         return $totalDay;
     }
 
-    public static function GeneratePlanName($destId, $totalDay) {
-        $destName = DestinationService::GetDestinationNameById($destId);
+    public static function GeneratePlanName($destName, $totalDay) {
         $planName =  'Lịch trình ' . $totalDay . ' ngày tại ' . $destName;
         return $planName;
     }

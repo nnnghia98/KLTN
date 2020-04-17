@@ -65,4 +65,13 @@ class DestinationService
         }
         return $categories;
     }
+
+    public static function GetDestinationById($id) {
+        $destination = Destination::find()
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->andWhere(['id' => $id])
+                        ->one();
+
+        return $destination;
+    }
 }

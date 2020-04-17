@@ -5,6 +5,7 @@ namespace app\modules\app\controllers;
 use app\modules\app\APPConfig;
 use app\modules\cms\services\PlanService;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 class PlanController extends Controller
@@ -31,7 +32,9 @@ class PlanController extends Controller
     }
 
     public function actionEdit($slug) {
-        return $this->render('edit');
+        $model = PlanService::GetPlanBySlug($slug);
+        $model = ArrayHelper::toArray($model);
+        return $this->render('edit', compact('model'));
     }
 
     public function actionDuplicate($slug = null) {
@@ -47,5 +50,9 @@ class PlanController extends Controller
             'pagination' => $pagination
         ];
         return $this->asJson($response);
+    }
+
+    public function actionGetDetail() {
+        
     }
 }

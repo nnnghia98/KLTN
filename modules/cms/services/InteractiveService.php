@@ -20,4 +20,16 @@ class InteractiveService
                     ->groupBy('object_id');
         return $query;
     }
+
+    public static function GetStringQueryInteractive($object_type) {
+        $query = "SELECT object_id, 
+                        COUNT(NULLIF(comment, NULL)) as count_comment, 
+                        COUNT(NULLIF(rating, 0)) as count_rating,
+                        AVG(NULLIF(rating, 0)) as avg_rating,
+                        COUNT(NULLIF(is_like, 0)) as count_like
+                    FROM interactive
+                    WHERE object_type = '$object_type'
+                    GROUP BY object_id";
+        return $query;
+    }
 }
