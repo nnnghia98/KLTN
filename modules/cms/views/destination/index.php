@@ -19,7 +19,7 @@ $pageData = [
             </div>
         </div>
         <div class="card-body" v-cloak>
-            <div class="loading-destinations text-center my-3" v-if="!loadedDestination" >
+            <div class="loading-destinations text-center my-3" v-if="!loading" >
                 <span><i class="icon-spinner2 spinner icon-2x mr-2"></i> Đang tải danh sách điểm đến</span>
             </div>
             <div class="destinations-available" v-else>
@@ -29,8 +29,6 @@ $pageData = [
                         <th>Điểm đến</th>
                         <th>Mô tả</th>
                         <th>tên<th>
-                        <th>Lượt truy cập<th>
-                        <th>Hình ảnh</th>
                         <th>Thao tác</th>
                     </tr>
                     <tr v-for="(destination, index) in destinations">
@@ -38,10 +36,7 @@ $pageData = [
                         <td>{{ destination.name }}</td>
                         <td>{{ destination.subtitle }}</td>
                         <td>{{ destination.slug }}</td>
-                        <td>{{ destination.viewed }}</td>
-                        <td>{{ destination.thumbnail }}</td>
                         <td>
-                            <a :href="'<?= CMSConfig::getUrl('destination/detail?slug=') ?>' + destination.slug" class="btn btn-icon btn-sm btn-outline-primary"><i class="icon-eye"></i></a>
                             <button class="btn btn-icon btn-sm btn-outline-danger" @click="confirmDelete(destination.destination_id)"><i class="icon-trash"></i></button>
                         </td>
                     </tr>
@@ -60,17 +55,12 @@ $pageData = [
     <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-            <div class="modal-header bg-light">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
             <div class="modal-body">
                 <h5>Bạn có chắc chắn xóa điểm đến này?</h5>
             </div>
             <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-delete-work" @click="deleteUser">Delete</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn-delete-work" @click="deleteDestination">Delete</button>
             </div>
             </div>
         </div>
@@ -83,8 +73,8 @@ $pageData = [
             el: '#destination-manage-pageadmin',
             data: {
                 destinations: null,
-                selecteddes: null,
-                loadedDestination: false,
+                selectdestination: null,
+                loading: false,
                 roles: JSON.parse('<?= json_encode($roles, true) ?>'),
                 page: 1
             },
@@ -99,7 +89,7 @@ $pageData = [
                 getDestinations: function() {
                     var _this = this;
                     var api = '<?= CMSConfig::getUrl('destination/get-list?page=') ?>' + _this.page;
-                    _this.loadedDestinations = false;
+                    _this.loading = false;
                     
                     _this.sendAjax(api, {}, function(resp) {
                         if (resp.status) {
@@ -130,7 +120,7 @@ $pageData = [
                     var _this = this,
                         api = '<?= CMSConfig::getUrl('destination/delete')?>',
                         data = {
-                            id: _this.selecteddes
+                            id: _this.selectdestination
                         }
                     _this.sendAjax(api, data, function(resp) {
                         if(resp.status) {

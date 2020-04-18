@@ -5,7 +5,7 @@ namespace app\modules\cms\controllers;
 use app\modules\cms\CMSConfig;
 use app\modules\cms\models\AuthRole;
 use app\modules\cms\models\AuthUser;
-use app\modules\cms\services\AuthService;
+use app\modules\cms\services\AuthService;   
 use app\modules\cms\services\SiteService;
 use Yii;
 use yii\db\Query;
