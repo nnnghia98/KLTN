@@ -2,6 +2,7 @@
     --main-color-indigo: #5c6bc0;
     --main-color-pink: #ec407a;
 }
+
 html,
 body {
     height: 100%;
@@ -23,7 +24,7 @@ a {
     padding: 0 0 60px;
 }
 
-.wrap > .container {
+.wrap>.container {
     padding: 70px 15px 20px;
 }
 
@@ -49,8 +50,11 @@ a {
     font-style: italic;
 }
 
+
 /* add sorting icons to gridview sort links */
-a.asc:after, a.desc:after {
+
+a.asc:after,
+a.desc:after {
     position: relative;
     top: 1px;
     display: inline-block;
@@ -62,11 +66,13 @@ a.asc:after, a.desc:after {
 }
 
 a.asc:after {
-    content: /*"\e113"*/ "\e151";
+    content: /*"\e113"*/
+    "\e151";
 }
 
 a.desc:after {
-    content: /*"\e114"*/ "\e152";
+    content: /*"\e114"*/
+    "\e152";
 }
 
 .sort-numerical a.asc:after {
@@ -103,27 +109,29 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
+
 /* align the logout "link" (button in form) of the navbar */
-.nav li > form > button.logout {
+
+.nav li>form>button.logout {
     padding: 15px;
     border: none;
 }
 
 @media(max-width:767px) {
-    .nav li > form > button.logout {
-        display:block;
+    .nav li>form>button.logout {
+        display: block;
         text-align: left;
         width: 100%;
         padding: 10px 15px;
     }
 }
 
-.nav > li > form > button.logout:focus,
-.nav > li > form > button.logout:hover {
+.nav>li>form>button.logout:focus,
+.nav>li>form>button.logout:hover {
     text-decoration: none;
 }
 
-.nav > li > form > button.logout:focus {
+.nav>li>form>button.logout:focus {
     outline: none;
 }
 
@@ -138,29 +146,30 @@ a.desc:after {
 ::-webkit-scrollbar {
     width: 10px;
 }
-  
+
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
-  
 
 ::-webkit-scrollbar-thumb {
     background: #414852;
 }
-  
 
 ::-webkit-scrollbar-thumb:hover {
     background: #888;
 }
 
+
 /** CUSTOM CSS*/
 
-.vs__search, .vs__search:focus, .vs__selected{
+.vs__search,
+.vs__search:focus,
+.vs__selected {
     margin-top: 0;
     border-radius: 1.25rem;
 }
 
-.vs__dropdown-toggle{
+.vs__dropdown-toggle {
     padding: .5rem .1875rem;
     border-radius: 1.25rem;
 }
@@ -169,8 +178,14 @@ a.desc:after {
     border-radius: 1.25rem;
 }
 
-.card, .media-list-photo {
+.card,
+.modal-content,
+.media-list-photo {
     border-radius: .625rem;
+}
+
+.modal-content {
+    overflow: hidden;
 }
 
 .form-control {
@@ -209,13 +224,13 @@ a.desc:after {
 }
 
 .media-list-photo img {
-	-webkit-transition: .3s ease-in-out;
-	transition: .3s ease-in-out;
+    -webkit-transition: .3s ease-in-out;
+    transition: .3s ease-in-out;
 }
 
 .media-list-photo:hover img {
     -webkit-transform: rotate(5deg) scale(1.2);
-	transform: rotate(5deg) scale(1.2);
+    transform: rotate(5deg) scale(1.2);
 }
 
 .star-rating {
@@ -224,15 +239,18 @@ a.desc:after {
     font-size: 2.5em;
     justify-content: left;
 }
+
 .star-rating .back-stars {
     display: flex;
     color: #ccc;
     position: relative;
     text-shadow: 1px 1px 2px #aaa;
 }
+
 .star-rating .front-stars {
     display: flex;
-    color: var(--main-color-pink); /**#FFBC0B*/
+    color: var(--main-color-pink);
+    /**#FFBC0B*/
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -256,4 +274,8 @@ a.desc:after {
 .leaflet-marker-icon {
     -webkit-filter: drop-shadow(0px 0px 3px #333);
     filter: drop-shadow(0px 0px 3px #333);
+}
+
+.border-radius-3 {
+    border-radius: .625rem;
 }

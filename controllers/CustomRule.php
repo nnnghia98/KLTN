@@ -10,7 +10,7 @@ class CustomRule extends BaseObject implements UrlRuleInterface
     public function createUrl($manager, $route, $params)
     {
         //check case create url with: Url::to()
-        if (preg_match('/^(app\/point\/detail)|(cms\/point\/detail)|(cms\/app\/user-detail)/', $route)) {
+        if (preg_match('/^(app\/plan\/edit)|(app\/plan\/duplicate)|(app\/place\/detail)|(app\/destination\/detail)/', $route)) {
             $routes = explode('/', $route);
             //get slug
             $slug = hash('md5', date("Y-m-d H:i:s")); //fake slug
@@ -49,7 +49,7 @@ class CustomRule extends BaseObject implements UrlRuleInterface
     {
         $pathInfo = $request->getPathInfo();
         $params = $request->getQueryParams();
-        if (preg_match('/^(cms\/tac-pham\/chi-tiet)|(cms\/tin-tuc\/chi-tiet)|(cms\/thu-quan\/chi-tiet)/', $pathInfo)) {
+        if (preg_match('/^(app\/plan\/edit)|(app\/plan\/duplicate)|(app\/place\/detail)|(app\/destination\/detail)/', $pathInfo)) {
             $pathItems = explode('/', $pathInfo);
             $params['slug'] = end($pathItems);
             array_pop($pathItems);

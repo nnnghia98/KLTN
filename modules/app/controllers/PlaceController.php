@@ -67,4 +67,15 @@ class PlaceController extends Controller
 
         return $this->asJson($response);
     }
+
+    public function actionGetList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $type = '', $sort = 'avg_rating', $lat = '', $lng = '') {
+        list($places, $pagination) = PlaceService::GetPlacesAppPage($page, $perpage, $keyword, $destination, $type, $sort, $lat, $lng);
+        $response = [
+            'status' => true,
+            'places' => $places,
+            'pagination' => $pagination
+        ];
+
+        return $this->asJson($response);
+    }
 }

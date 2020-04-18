@@ -111,4 +111,49 @@ class PlaceService
         $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($rests));
         return [$rests, $pagination];
     }
+
+    public static function GetPlacesAppPage($page, $perpage, $keyword, $destination, $type, $sort, $lat, $lng) {
+        list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
+        $interactive = InteractiveService::GetStringQueryInteractive(self::$OBJECT_TYPE);
+        if($lat === '' || $lng === '') {
+            $query = "SELECT p.*, i.*
+                        FROM place p
+                        LEFT JOIN ($interactive) i ON i.object_id = p.id
+                        WHERE destination_id = $destination AND place_type_id = $type AND name LIKE '%$keyword%' AND status = 1 AND delete = 1
+                        ORDER BY $sort 
+                        LIMIT $limit OFFSET $offset";
+        } else {
+            $latlngs = "SELECT ST_GeographyFromText('SRID=4326;POINT($lng $lat)')";
+            $query = "SELECT p.*, i.*, ST_Distance(t.x, ST_SetSRID(ST_MakePoint(place.lng::double precision, place.lat::double precision),4326)::geography) AS dist
+                        FROM place p, ($latlngs) t(x)
+                        LEFT JOIN ($interactive) i ON i.object_id = p.id
+                        WHERE destination_id = $destination AND place_type_id = $type AND name LIKE '%$keyword%' AND status = 1 AND delete = 1
+                        AND ST_DWithin(t.x, ST_SetSRID(ST_MakePoint(place.lng::double precision, place.lat::double precision),4326)::geography, 200000)
+                        ORDER BY dist 
+                        LIMIT $limit OFFSET $offset";
+        }
+
+        $places = SiteService::CommandQueryAll($query);
+        $total = self::CountTotalPlaceOfList($destination, $type, $keyword, $lat, $lng);
+        $pagination = SiteService::CreatePaginationMetadata($total, $page, $perpage, count($places));
+
+        return [$places, $pagination];
+    }
+
+    public static function CountTotalPlaceOfList($destination, $type, $keyword, $lat, $lng) {
+        if($lat === '' || $lng === '') {
+            $query = "SELECT COUNT(*)
+                        FROM place as p
+                        WHERE destination_id = $destination AND place_type_id = $type AND name LIKE '%" . $keyword . "%' AND status = 1 AND delete = 1";
+        } else {
+            $latlngs = "SELECT ST_GeographyFromText('SRID=4326;POINT($lng $lat)')";
+            $query = "SELECT COUNT(*)
+                        FROM place as p, ($latlngs) AS t(x)
+                        WHERE destination_id = $destination AND place_type_id = $type AND name LIKE '%" . $keyword . "%' AND status = 1 AND delete = 1
+                        AND ST_DWithin(t.x, ST_SetSRID(ST_MakePoint(place.lng::double precision, place.lat::double precision),4326)::geography, 200000)";
+        }
+
+        $total = SiteService::CommandQueryColumn($query);
+        return $total[0];
+    }
 }
