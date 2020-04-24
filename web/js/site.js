@@ -79,13 +79,13 @@ function convertTimeToMinute(hour, minute) {
 function convertMinuteToTime(minute, type) {
     var hour = Math.floor(minute / 60)
     var min = Math.floor(minute % 60)
-    var time
+    var time = ''
     if (type === 'range') {
         if (hour !== 0) {
-            time = hour + 'h'
+            time += hour + 'h'
         }
         if (min !== 0) {
-            time = min + "'"
+            time += min + '\''
         }
     }
     if (type === 'oclock') {

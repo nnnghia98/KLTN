@@ -4,15 +4,16 @@ use app\modules\app\APPConfig;
 use app\modules\app\PathConfig;
 use app\modules\cms\services\PlaceService;
 use app\modules\cms\services\PlanService;
+use app\modules\contrib\gxassets\GxLaddaAsset;
+use app\modules\contrib\gxassets\GxLeafletAsset;
 use app\modules\contrib\gxassets\GxVueDraggableAsset;
-
 use app\modules\contrib\gxassets\GxVueSelectAsset;
-use app\modules\contrib\gxassets\GxVuetifyAsset;
 
+GxLaddaAsset::register($this);
 GxVueDraggableAsset::register($this);
-
 GxVueSelectAsset::register($this);
-GxVuetifyAsset::register($this);
+GxLeafletAsset::register($this);
+
 include('edit_ext.php');
 
 $pageData = [
@@ -21,42 +22,62 @@ $pageData = [
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/plan-header.jpg'
 ]; ?>
 <?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
-
-<style>
-    .v-application--wrap {
-        min-height: unset;
-    }
-</style>
 <div class="content mt-3" id="edit-plan-page">
     <div class="edit-plan-content">
         <div class="card bg-indigo-400">
             <div class="card-header header-elements-inline">
-                <h4 class="card-title font-weight-bold text-uppercase">#{{ plan.name }}</h4>
+                <h4 class="card-title font-weight-bold text-uppercase" v-cloak>#{{ plan.name }}</h4>
+                <div class="header-elements">
+                    <button class="btn bg-pink-400 rounded-round">Xem trên bản đồ <i class="icon-map4 ml-2"></i></button>
+                </div>
             </div>
         </div>
 
-        <div class="plan-detail-wrap w-100">
+        <div class="plan-detail-wrap w-100 pb-3 px-3">
             <div class="date-item-wrap" v-for="(dateItem, didx) in detail">
                 <div class="card bg-indigo-400">
                     <div class="card-header header-elements-inline p-2">
-                        <h4 class="card-title font-weight-bold">Ngày {{ didx + 1 }}</h4>
-                        <div class="header-elements"></div>
+                        <h4 class="card-title font-weight-bold" v-cloak>Ngày {{ didx + 1 }} ({{ dateItem.date }})</h4>
+                        <div class="header-elements">
+                            <div class="dropdown">
+                                <a class="list-icons-item dropdown-toggle caret-0 text-white" data-toggle="dropdown" aria-expanded="false">
+                                    <i class="icon-notebook"></i> 
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(16px, 19px, 0px); width: 250px;">
+                                    <div class="p-2">
+                                        <textarea class="form-control" cols="35" rows="4" v-model="dateItem.note"></textarea>
+                                    </div>
+                                    <div class="d-flex justify-content-end p-2">   
+                                        <button class="btn btn-primary btn-sm">Lưu</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="date-places-item position-relative">
-                    <div class="overlay-loading position-absolute w-100 h-100 top-0 left-0 d-flex justify-content-center align-items-center" style="background:rgba(255,255,255,.9);z-index:100;" v-if="dateItem.calculating">
+                <div class="date-places-item position-relative px-2">
+                    <div class="overlay-loading position-absolute w-100 h-100 top-0 left-0 d-flex justify-content-center align-items-center border-radius-3" style="background:rgba(255,255,255,.9);z-index:10;" v-if="dateItem.calculating">
                         <i class="icon-spinner2 spinner"></i>
                     </div>
                     <div class="date-places">
-                        <draggable v-model="dateItem.places" @end="updateDistanceAndStartTimeOfDate(didx)">
+                        <draggable v-model="dateItem.places" @end="recalculatePlacesOfDate(didx)">
                             <transition-group>
-                                <place-item v-for="(place, pidx) in dateItem.places" 
-                                    :key="place.id + place.time_start" 
-                                    :place="place" :pidx="pidx" :didx="didx" :placeofdate="dateItem.places.length" :movetype="moveType" @remove-place="removePlace" @save-note="saveNote" @save-time-start="saveTimeStart" @save-time-stay="saveTimeStay" @save-time-free="saveTimeFree" @change-move-type="changeMoveType">
+                                <place-item 
+                                    v-for="(place, pidx) in dateItem.places" 
+                                    :key="place.id +'-'+ place.time_start +'-'+ place.time_free +'-'+ place.time_start +'-'+ place.time_stay" 
+                                    :place="place" 
+                                    :pidx="pidx" 
+                                    :didx="didx" 
+                                    :placeofdate="dateItem.places.length" 
+                                    :movetype="moveType" 
+                                    @get-recents="getRecents"
+                                    @remove-place="removePlace" 
+                                    @on-modify-place="onModifyPlace"
+                                    @on-change-time-start="onChangeTimeStart"> 
                                 </place-item>
                             </transition-group>
                         </draggable>
-                        <div class="place-item btn-add-place" data-toggle="modal" data-target="#placeListModal" @click="dateTarget = didx">
+                        <div class="place-item btn-add-place mt-3" data-toggle="modal" data-target="#placeListModal" @click="dateTarget = didx">
                             <div class="add-place-content d-flex justify-content-center align-items-center">
                                 <h4 class="mb-0"><i class="icon-plus2 mr-2"></i> Thêm địa điểm</h4>
                             </div>
@@ -64,6 +85,12 @@ $pageData = [
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="text-center my-3">
+            <button id="btn-save-plan" class="btn btn-lg bg-pink-400 rounded-round font-weight-bold" style="font-size: 1rem" @click="savePlan">
+                Lưu lịch trình
+            </button>
         </div>
     </div>
 
@@ -77,10 +104,26 @@ $pageData = [
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-search">
-
+                    <div class="form-search" v-cloak>
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="" class="font-weight-bold">Loại địa điểm</label>
+                                <select class="form-control" v-model="places.query.type">
+                                    <option value="<?= PlaceService::$TYPE['VISIT'] ?>">Tham quan</option>
+                                    <option value="<?= PlaceService::$TYPE['FOOD'] ?>">Ăn uống</option>
+                                    <option value="<?= PlaceService::$TYPE['REST'] ?>">Nghỉ ngơi</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label for="" class="font-weight-bold">Tên địa điểm</label>
+                                <input type="text" class="form-control" placeholder="Tên địa điểm" v-model="places.query.keyword">
+                            </div>
+                            <div class="col-md-4 form-group text-right mt-auto">
+                                <button class="btn bg-pink-400 rounded-round" @click="searchPlaces">Tìm kiếm</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="place-list">
+                    <div class="place-list" v-cloak>
                         <div class="loading-data d-flex justify-content-center p-3" style="height: 100vh" v-if="places.loading">
                             <div class="loading-content"><i class="icon-spinner2 spinner icon-2x"></i></div>
                         </div>
@@ -114,6 +157,40 @@ $pageData = [
             </div>
         </div>
     </div>
+
+    <div class="map-preview">
+        <div class="content h-100">
+            <div class="row h-100">
+                <div class="col-md-4 h-100" v-cloak>
+                    <div class="card card-body mb-0 h-100 d-flex flex-row">
+                        <div class="map-date-list mr-3">
+                            <a v-for="(dateItem, didx) in detail" @click="map.dateView = didx">
+                                <h5 class="font-weight-bold border-bottom-1 border-bottom-dashed border-bottom-indigo"
+                                :class="map.dateView == didx ? 'text-pink-400' : ''">
+                                    Ngày {{ didx + 1 }}
+                                </h5>
+                            </a>
+                        </div>
+                        <div class="map-date-detail">
+                            <div class="list-feed">
+								<div class="list-feed-item border-pink-400" v-for="(place, pidx) in detail[map.dateView].places">
+									<div class="text-muted">Bắt đầu: {{ rangeTimeFormat(place.time_start) }}</div>
+                                    <a :href="'<?= APPConfig::getUrl('place/detail/') ?>' + place.slug">
+                                        <h5 class="mb-0">{{ place.name }}</h5>
+                                    </a>
+								</div>
+							</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 h-100">
+                    <div class="card mb-0 h-100 overflow-hidden">
+                        <div id="map-preview" class="h-100 w-100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -138,53 +215,53 @@ $pageData = [
                         sort: 'avg_rating'
                     },
                 },
-                dataOfPlaceEditing: {
-                    didx: null,
-                    pidx: null,
-                    note: null,
-                    time_start: null,
-                    time_stay: null,
-                    time_move: null,
-                    time_free: null,
-                    distance: null
-                },
                 moveType: [
                     {
-                        type: 'car',
+                        velocity: 40,
+                        label: 'Xe máy',
+                        icon: 'fas fa-motorcycle'
+                    },
+                    {
+                        velocity: 60,
                         label: 'Xe ô tô',
-                        icon: 'icon-car'
+                        icon: 'fas fa-car'
                     }, {
-                        type: 'pedestrian',
+                        velocity: 5,
                         label: 'Người đi bộ',
-                        icon: 'icon-footprint'
-                    }, {
-                        type: 'bicycle',
-                        label: 'Xe đạp',
-                        icon: 'icon-bike'
+                        icon: 'fas fa-walking'
                     }
                 ],
                 dateTarget: null,
-                openTimeStayBox: false,
-                openTimeStartBox: false,
-                openTimeFreeBox: false,
-                openTimeFreeBox: false,
-                openMoveTypeBox: false,
-                openNoteBox: false
+                map: {
+                    dateView: 0
+                }
             },
-
-            vuetify: new Vuetify(),
-            computed: {},
+            computed: {
+                queryPage: function() {
+                    return this.places.query.page
+                }
+            },
+            mounted: function() {
+                initMap()
+            },
             created: function() {
                 this.detail = this.detail.length > 0 ? this.detail : this.createDefaultDetail()
                 this.getPlaces()
+                
+            },
+            watch: {
+                queryPage: function() {
+                    this.getPlaces()
+                }
             },
             methods: {
                 getPlaces: function() {
                     var _this = this,
                         query = this.places.query,
-                        api = '<?= APPConfig::getUrl('place/get-list') ?>' +
+                        api = `<?= APPConfig::getUrl('place/get-list') ?>` +
                         `?page=${query.page}&keyword=${query.keyword}&destination=${this.plan.destination_id}&type=${query.type}&sort=${query.sort}&lat=${query.center[0]}&lng=${query.center[1]}`
-
+                    
+                    this.places.loading = true
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
                             _this.places.data = resp.places
@@ -192,6 +269,31 @@ $pageData = [
                         } else {
                             toastMessage('error', 'Lỗi!')
                         }
+                        this.places.loading = false
+                    })
+                },
+
+                getRecents: function(didx, lat, lng) {
+                    this.dateTarget = didx
+                    this.places.query = {
+                        center: [lat, lng],
+                        type: '<?= PlaceService::$TYPE['VISIT'] ?>',
+                        keyword: '',
+                        page: 1,
+                        sort: 'avg_rating'
+                    }
+                    this.$nextTick(function() {
+                        this.getPlaces()
+                    })
+                },
+
+                searchPlaces: function() {
+                    this.places.query.page = 1
+                    this.places.query.lat = ''
+                    this.places.query.lng = ''
+                    
+                    this.$nextTick(function() {
+                        this.getPlaces()
                     })
                 },
 
@@ -243,15 +345,19 @@ $pageData = [
 
                     if (placesOfDate.length >= 1) {
                         this.showOverlayProcessSchedule(didx)
-                        var lastPlace = this.detail[didx].places[placesOfDate.length - 1];
-                        this.getRoutesAndDistancesBetweenLocations(lastPlace, newPlace, this.moveType[0].type, function(response) {
-                            if (response == false) {
-                                toastMessage('error', 'Có lỗi sảy ra, vui lòng thử lại');
+                        var lastPlace = this.detail[didx].places[placesOfDate.length - 1],
+                            waypoints = [lastPlace, newPlace]
+                        this.getRoutesAndDistancesBetweenLocations(waypoints, function(data) {
+                            if (data == false) {
+                                toastMessage('error', 'Có lỗi sảy ra, vui lòng thử lại')
                             } else {
-                                lastPlace.distance = response.distance / 1000;
-                                lastPlace.time_move = response.travelTime / 60;
-                                newPlace.time_start = _this.getTotalTimeFormFristPlace(didx, placesOfDate.length - 1);
-                                _this.detail[didx].places.push(newPlace);
+                                data.forEach((wp, index) => {
+                                    waypoints[index].distance = wp.length / 1000
+                                    waypoints[index].time_move = Math.ceil(waypoints[index].distance / _this.moveType[waypoints[index].move_type].velocity * 60)
+                                    waypoints[index + 1].time_start = _this.getTotalTimeFormFristPlace(didx, placesOfDate.length - 1)
+                                })
+                                
+                                _this.detail[didx].places.push(newPlace)
                             }
 
                             _this.hideOverlayProcessSchedule(didx)
@@ -263,15 +369,18 @@ $pageData = [
                     }
                 },
 
+                getRoutesAndDistancesBetweenLocations: function(waypoints, callback) {
+                    var api = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=<?= PlanService::$HERE_API_KEY ?>` 
+                
+                    waypoints.forEach((wp, index) => {
+                        api += `&waypoint${index}=geo!${wp.lat},${wp.lng}` 
+                    })
 
-                //transporttype: car | pedestrian
-                getRoutesAndDistancesBetweenLocations: function(waypoint0, waypoint1, moveType, callback) {
-                    var api = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=<?= PlanService::$HERE_API_KEY ?>
-                            &waypoint0=geo!${waypoint0.lat},${waypoint0.lng}&waypoint1=geo!${waypoint0.lat},${waypoint0.lng}&routeattributes=sm&mode=fastest;${moveType}`;
+                    api += `&routeattributes=sm&mode=fastest;car`
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.response.route) {
-                            callback(resp.response.route[0].summary);
+                            callback(resp.response.route[0].leg);
                         } else {
                             callback(false);
                         }
@@ -307,71 +416,79 @@ $pageData = [
                     return placeData;
                 },
 
-                removePlace: function() {
-
-                },
-
-                saveNote: function() {
-
-                },
-
-                saveTimeStart: function() {
-
-                },
-                
-                saveTimeFree: function() {
+                removePlace: function(didx, pidx) {
+                    if(pidx != this.detail[didx].places.length - 1) {
+                        this.detail[didx].places.splice(pidx, 1)
+                        this.recalculatePlacesOfDate(didx)
+                    } else {
+                        this.detail[didx].places.splice(pidx, 1)
+                    }
                     
                 },
 
-                saveTimeStay: function() {
-
+                onModifyPlace: function(didx, pidx) {
+                    if(pidx != this.detail[didx].places.length - 1) {
+                        var totaltime = this.getTotalTimeFormFristPlace(didx, pidx)
+                        this.updateStartTimeFromIdxToIdx(didx, pidx + 1, this.detail[didx].places.length - 1, totaltime)
+                    }
                 },
 
-                changeMoveType: function() {
-
-                },
-
-                openEditingBox: function(e, didx, pidx, place, box_type) {
-                    var _this = this,
-                        offset = $(e.target).offset()
-
-                    if (didx !== _this.dataOfPlaceEditing.didx || pidx !== _this.dataOfPlaceEditing.pidx) {
-                        _this.dataOfPlaceEditing = {
-                            didx: didx,
-                            pidx: pidx,
-                            note: place.note,
-                            time_start: place.time_start,
-                            time_stay: place.time_stay,
-                            time_free: place.time_free,
-                            distance: place.distance
+                onChangeTimeStart: function(oldvalue, newvalue, didx, pidx) {
+                    if (pidx != 0) {
+                        if (newvalue > oldvalue) {
+                            this.detail[didx].places[pidx - 1].time_free = newvalue - oldvalue
+                        } else if (newvalue < oldvalue) {
+                            var totaltime = this.detail[didx].places[0].time_start - (oldvalue - newvalue)
+                            this.updateStartTimeFromIdxToIdx(didx, 0, pidx - 1, totaltime)
                         }
                     }
 
-                    switch (box_type) {
-                        case 'move_type':
-                            _this.openMoveTypeBox = true;
-                            break;
-                        case 'time_stay':
-                            _this.openStayTimeBox = true;
-                            break;
-                        case 'time_start':
-                            _this.openStartTimeBox = true;
-                            break;
-                        case 'time_free':
-                            _this.openTimeFreeBox = true;
-                            break;
-                        case 'note':
-                            _this.openNoteBox = true;
-                            break;
+                    if (pidx != this.detail[didx].places.length - 1) {
+                        var totaltime = this.getTotalTimeFormFristPlace(didx, pidx)
+                        this.updateStartTimeFromIdxToIdx(didx, pidx + 1, this.detail[didx].places.length - 1, totaltime)
                     }
+                },
 
-                    _this.$nextTick(function() {
-                        var ofssetTop = offset.top + 25;
-                        var ofssetLeft = offset.left - 10;
-                        $('.place-editing-box').css('opacity', 1);
-                        $('.place-editing-box').css('top', ofssetTop);
-                        $('.place-editing-box').css('left', ofssetLeft);
-                    })
+                updateStartTimeFromIdxToIdx: function(didx, fromidx, toidx, totaltime) {
+                    var total_time = totaltime
+                    for (var i = fromidx; i <= toidx; i++) {
+                        this.detail[didx].places[i].time_start = total_time
+                        var place = this.detail[didx].places[i]
+                        total_time += parseInt(place.time_stay) + parseInt(place.time_free) + parseInt(place.time_move)
+                    }
+                    //update start time of date
+                    if (fromidx == 0) {
+                        this.detail[didx].time_start = this.detail[didx].places[0].time_start
+                    }
+                },
+
+                recalculatePlacesOfDate: function(didx) {
+                    var _this = this;
+                    var coords = [];
+                    if (this.detail[didx].places.length == 0) {
+                        return;
+                    } else if (this.detail[didx].places.length == 1) {
+                        this.detail[didx].places[0].time_start = this.detail[didx].time_start;
+                    } else if (this.detail[didx].places.length > 1) {
+                        this.showOverlayProcessSchedule(didx)
+                        var waypoints = this.detail[didx].places
+                        this.getRoutesAndDistancesBetweenLocations(waypoints, function(data) {
+                            if (data == false) {
+                                toastMessage('error', 'Có lỗi sảy ra, vui lòng thử lại')
+                            } else {
+                                data.forEach((wp, index) => {
+                                    if(index == 0) {
+                                        waypoints[index].time_start = _this.detail[didx].time_start
+                                    }
+                                    waypoints[index].distance = wp.length / 1000
+                                    waypoints[index].time_move = Math.ceil(waypoints[index].distance / _this.moveType[waypoints[index].move_type].velocity * 60)
+                                    waypoints[index + 1].time_start = _this.getTotalTimeFormFristPlace(didx, index)
+                                })
+                            }
+
+                            _this.hideOverlayProcessSchedule(didx)
+                        })
+                    }
                 },
 
                 showOverlayProcessSchedule: function(didx) {
@@ -384,6 +501,34 @@ $pageData = [
                         _this.detail[didx].calculating = false;
                     })
                 },
+
+                rangeTimeFormat: function(minute) {
+                    return convertMinuteToTime(minute, 'range');
+                },
+
+                oclockTimeFormat: function(minute) {
+                    return convertMinuteToTime(minute, 'oclock');
+                },
+
+                savePlan: function() {
+                    var api = '<?= APPConfig::getUrl('plan/save') ?>',
+                        data = {
+                            detail: JSON.stringify(this.detail),
+                            planid: this.plan.id
+                        },
+                        slug = this.plan.slug,
+                        ladda = Ladda.create($('#btn-save-plan')[0])
+
+                    ladda.start()
+                    sendAjax(api, data,'POST', (resp) => {
+                        if(resp.status) {
+                            window.location.href('<?= APPConfig::getUrl('plan/detail/') ?>' + slug)
+                        } else {
+                            toastMessage('error', resp.message)
+                        }
+                        ladda.stop()
+                    })
+                }
             }
         })
     })

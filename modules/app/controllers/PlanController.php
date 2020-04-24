@@ -7,6 +7,7 @@ use app\modules\cms\services\PlanService;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class PlanController extends Controller
 {
@@ -34,11 +35,29 @@ class PlanController extends Controller
     public function actionEdit($slug) {
         $model = PlanService::GetPlanBySlug($slug);
         $model = ArrayHelper::toArray($model);
+        $model['detail'] = json_decode($model['detail'], true);
         return $this->render('edit', compact('model'));
     }
 
     public function actionDuplicate($slug = null) {
         return $this->render('duplicate');
+    }
+
+    public function actionSave() {
+        $request = Yii::$app->request;
+        if($request->isPost) {
+            $result = PlanService::SaveDetail($request->post());
+            if($result) { 
+                return $this->asJson(['staus' => true]);
+            }
+
+            return $this->asJson([
+                'status' => false,
+                'message' => PlanService::$RESPONSE['EDIT_ERROR']
+            ]);
+        }
+
+        throw new NotFoundHttpException();
     }
 
     /**-------------API-----------------*/

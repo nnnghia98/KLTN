@@ -3,6 +3,7 @@
 namespace app\modules\cms\services;
 
 use app\modules\cms\models\Plan;
+use app\modules\cms\models\PlanDetail;
 use app\modules\cms\services\InteractiveService;
 use DateTime;
 use Yii;
@@ -22,7 +23,8 @@ class PlanService
 
     public static $RESPONSE = [
         'ERROR_LIST' => 'Không thể lấy danh sách lịch trình',
-        'CREATE_ERROR' => 'Không thể tạo lịch trình'
+        'CREATE_ERROR' => 'Không thể tạo lịch trình',
+        'EDIT_ERROR' => 'Không thể lưu lịch trình chi tiết'
     ];
 
     public static $HERE_API_ID = 'gRqLa6YYLXTqvoTTUhiT';
@@ -98,5 +100,76 @@ class PlanService
     public static function GeneratePlanName($destName, $totalDay) {
         $planName =  'Lịch trình ' . $totalDay . ' ngày tại ' . $destName;
         return $planName;
+    }
+
+    public static function SaveDetail($data) {
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            $planid = $data['planid'];
+            $detail = json_decode($data['detail'], true);
+
+            $plan = $planid ? Plan::findOne($planid) : self::DuplicatePlan($planid);
+            self::DeleteAllPlanDetail($planid);
+
+            $planid = $plan->id;
+            $flag = true;
+            foreach($detail as &$date) {
+                foreach($date['places'] as $place) {
+                    $plan_detail = new PlanDetail();
+                    $plan_detail->plan_id = $planid;
+                    $plan_detail->place_id = (int)$place['id'];
+                    $plan_detail->place_name = $place['name'];
+                    $plan_detail->time_start = (int)$place['time_start'];
+                    $plan_detail->time_stay = (int)$place['time_stay'];
+                    $plan_detail->time_free = (int)$place['time_free'];
+                    $plan_detail->time_move = (int)$place['time_move'];
+                    $plan_detail->distance = (float)$place['distance'];
+                    $plan_detail->move_type = (int)$place['move_type'];
+                    $plan_detail->note = $place['note'];
+                    $plan_detail->date_index = (int)$place['didx'];
+                    $plan_detail->thumbnail = $place['thumbnail'];
+                    $plan_detail->slug = $place['slug'];
+                    $plan_detail->lat = $place['lat'];
+                    $plan_detail->lng = $place['lng'];
+
+                    if(!($flag = $plan_detail->save(false))) {
+                        $transaction->rollBack();
+                        break;
+                    }
+                }
+            }
+
+            if($flag) {
+                $plan->detail = json_encode($detail, true);
+                if($plan->save()) {
+                    $transaction->commit();
+                    return true;
+                }
+            }
+            
+        } catch(\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        } catch(\Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+        return false;
+    }
+
+    public static function DuplicatePlan($id) {
+        $oldPlan = Plan::findOne($id);
+        $newPlan = new Plan();
+
+        $newPlan->setAttributes($oldPlan->attributes);
+        $newPlan->created_by = Yii::$app->user->id;
+        $newPlan->slug = SiteService::uniqid();
+        $newPlan->save();
+
+        return $newPlan;
+    }
+
+    public static function DeleteAllplanDetail($planid) {
+        PlanDetail::deleteAll(['plan_id' => $planid]);
     }
 }

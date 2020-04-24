@@ -23,7 +23,7 @@ use Yii;
  * @property string $note
  * @property string $thumbnail
  * @property string $experient
- * @property int $viewed
+ * @property string $slug
  */
 class PlanDetail extends \yii\db\ActiveRecord
 {
@@ -41,11 +41,11 @@ class PlanDetail extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['plan_id', 'place_id', 'date_index', 'time_start', 'time_move', 'time_stay', 'move_type', 'time_free', 'viewed'], 'default', 'value' => null],
-            [['plan_id', 'place_id', 'date_index', 'time_start', 'time_move', 'time_stay', 'move_type', 'time_free', 'viewed'], 'integer'],
+            [['plan_id', 'place_id', 'date_index', 'time_start', 'time_move', 'time_stay', 'move_type', 'time_free'], 'default', 'value' => null],
+            [['plan_id', 'place_id', 'date_index', 'time_start', 'time_move', 'time_stay', 'move_type', 'time_free'], 'integer'],
             [['distance'], 'number'],
             [['note', 'experient'], 'string'],
-            [['place_name', 'lat', 'lng', 'thumbnail'], 'string', 'max' => 255],
+            [['place_name', 'lat', 'lng', 'thumbnail', 'slug'], 'string', 'max' => 255],
         ];
     }
 
@@ -71,7 +71,7 @@ class PlanDetail extends \yii\db\ActiveRecord
             'note' => 'Note',
             'thumbnail' => 'Thumbnail',
             'experient' => 'Experient',
-            'viewed' => 'Viewed',
+            'slug' => 'Slug',
         ];
     }
 }

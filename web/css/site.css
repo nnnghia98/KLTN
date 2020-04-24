@@ -15,6 +15,7 @@ a:not(.btn):hover {
 a {
     color: var(--main-color-indigo);
     transition: .5 all ease;
+    cursor: pointer;
 }
 
 .wrap {

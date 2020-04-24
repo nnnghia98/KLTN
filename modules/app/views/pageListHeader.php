@@ -22,12 +22,12 @@
 
 </style>
 <div class="page-list-header d-flex justify-content-center align-items-center flex-column">
-	<div class="container h-100 position-relative">
-		<div class="position-absolute bottom-0 left-0 pb-4">
+	<div class="container h-100 position-relative d-flex justify-content-center align-items-center">
+		<div class="">
 			<div class="page-list-title">
 				<h1 class="font-weight-bold text-white text-center mb-0"><?= $pageTitle ?></h1>
 			</div>
-			<div class="page-breadcrumbs d-flex flex-column flex-md-row align-items-center">
+			<div class="page-breadcrumbs d-flex flex-row justify-content-center align-items-center">
 				<a href="<?= Yii::$app->homeUrl ?>" class="breadcrumb-link breadcrumb-homepage text-white"><i class="icon-home mr-1"></i> <span>Trang chủ</span></a>
 				<span class="mx-2 text-white">/</span>
 				<a class="breadcrumb-link breadcrumb-current-page"><span><?= $pageBreadcrumb ?></span></a>
