@@ -178,7 +178,7 @@ $pageData = [
                                                 </a>
                                             </div>
                                             <div class="right-item my-auto">
-                                                <span class="text-indigo-400 cursor-pointer btn-zoom-to-place" @click="zoomToPlace(place.slug)"><i class="icon-location4"></i></span>
+                                                <span class="text-indigo-400 cursor-pointer btn-zoom-to-place" @click="zoomToPlace(place)"><i class="icon-location4"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -248,7 +248,6 @@ $pageData = [
             created: function() {
                 this.plan.detail = this.plan.detail.length > 0 ? this.plan.detail : this.createDefaultDetail()
                 this.getPlaces()
-
             },
             watch: {
                 queryPage: function() {
@@ -511,12 +510,14 @@ $pageData = [
 
                 showMap: function() {
                     var _this = this
-
                     $('#mapPreviewModal').modal()
-                    drawPlaces(this.plan.detail[this.map.dateView].places)
-                    this.getRoutesFromHere(() => {
-                        drawPlan(_this.plan.routes[_this.map.dateView])
-                    })
+                    setTimeout(() => {
+                        DATA.map.invalidateSize()
+                        drawPlaces(this.plan.detail[this.map.dateView].places)
+                        this.getRoutesFromHere(() => {
+                            drawPlan(_this.plan.routes[_this.map.dateView])
+                        })
+                    }, 200)
                 },
 
                 rangeTimeFormat: function(minute) {
@@ -552,6 +553,18 @@ $pageData = [
                                         geojson.coordinates.push(latlng.split(',').reverse())
                                     })
 
+                                    var counter = 0
+                                    data.waypoint.forEach((wp, idx) => {
+                                        var place = dateItem.places[idx]
+                                        if(idx != dateItem.places.length - 1) {
+                                            geojson.coordinates.splice(wp.shapeIndex + counter, 0, [place.lng, place.lat])
+                                            counter++
+                                        } else {
+                                            geojson.coordinates.push([place.lng, place.lat])
+                                        }
+                                        
+                                    })
+
                                     _this.plan.routes[index] = geojson
                                 } else {
                                     toastMessage('error', 'Không thể lấy thông tin tuyến đường')
@@ -566,6 +579,10 @@ $pageData = [
                     })
 
                     $.when.apply(null, promies).done(callback)
+                },
+
+                zoomToPlace: function(item) {
+                    zoomToPlace(item)
                 },
 
                 savePlan: function() {
@@ -586,7 +603,7 @@ $pageData = [
                         sendAjax(api, data, 'POST', (resp) => {
                             if (resp.status) {
                                 var slug = _this.plan.slug
-                                window.location.href('<?= APPConfig::getUrl('plan/detail/') ?>' + slug)
+                                // window.location.assign('<?= APPConfig::getUrl('plan/detail/') ?>' + slug)
                             } else {
                                 toastMessage('error', resp.message)
                             }

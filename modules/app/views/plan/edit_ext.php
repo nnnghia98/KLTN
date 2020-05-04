@@ -1,3 +1,6 @@
+<?php 
+use app\modules\app\APPConfig; 
+?>
 <style>
     .plan-detail-wrap {
         display: flex;
@@ -128,12 +131,12 @@
     }
 
     function drawPlan(geojson) {
-        if(geojson != 'undefined') {    
+        if(geojson != 'undefined') {  
             if(DATA.map.hasLayer(DATA.layers.overlay['plan'])) {
                 DATA.layers.overlay['plan'].clearLayers()
             }
 
-            DATA.layers.overlay['plan'] = L.geoJSON(geojson)
+            DATA.layers.overlay['plan'].addLayer(L.geoJSON(geojson))
         }
     }
 
@@ -145,13 +148,34 @@
         var markers = [], icon, marker, bounds
         places.forEach(item => {
             icon = customIcon()
-            marker = L.marker([item.lat, item.lng], {icon: icon})
-            marker.ID = item.id
+            marker = L.marker([item.lat, item.lng], {icon: icon}).bindPopup(markerPopup(item))
+            marker._leaflet_id = item.id
             DATA.layers.overlay['place'].addLayer(marker)
         })
 
         bounds = DATA.layers.overlay['place'].getBounds()
         DATA.map.fitBounds(bounds, {padding: [20, 20]})
+    }
+
+    function markerPopup(target) {
+        var html = '<div class="place-popup d-flex flex-column align-items-center">' +
+            '<h4 class="font-weight-bold text-indigo-400 text-center">' +
+                '<a href="<?= APPConfig::getUrl('place/detail/') ?>' + target.slug + '">' + target.name + '</a>' +
+            '</h4>' +
+            '<h6 class="text-muted text-center"><i class="icon-home5 mr-1"></i>' + target.address + '</h6>' +
+            '<div class="destination-thumbnail overflow-hidden" style="border-radius: .625rem">' +
+                '<img src="<?= Yii::$app->homeUrl . 'uploads/' ?>' + target.thumbnail + '" width="225" height="150">' +
+            '</div>'
+        '</div>'
+
+        return html
+    }
+
+    function zoomToPlace(place) {
+        DATA.map.panTo([place.lat, place.lng])
+        if(DATA.layers.overlay['place'].hasLayer(place.id)) {
+            
+        }
     }
 
     function customIcon() {

@@ -83,8 +83,8 @@ class PlanService
         $model->created_by = Yii::$app->user->id;
         $model->thumbnail = $desitnation->thumbnail;
         $model->viewed = 0;
-        $model->routes = [];
-        $model->detail = [];
+        $model->routes = '[]';
+        $model->detail = '[]';
         
         if($model->save()) {
             return $model->slug;

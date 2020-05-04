@@ -11,7 +11,7 @@ use Yii;
  * @property string $name
  * @property string $date_start
  * @property string $date_end
- * @property string $total_day
+ * @property int $total_day
  * @property int $destination_id
  * @property string $note
  * @property string $slug
@@ -41,10 +41,10 @@ class Plan extends \yii\db\ActiveRecord
     {
         return [
             [['date_start', 'date_end', 'created_at'], 'safe'],
-            [['destination_id', 'status', 'delete', 'created_by', 'viewed'], 'default', 'value' => null],
-            [['destination_id', 'status', 'delete', 'created_by', 'viewed'], 'integer'],
+            [['total_day', 'destination_id', 'status', 'delete', 'created_by', 'viewed'], 'default', 'value' => null],
+            [['total_day', 'destination_id', 'status', 'delete', 'created_by', 'viewed'], 'integer'],
             [['note', 'routes', 'detail'], 'string'],
-            [['name', 'total_day', 'slug', 'thumbnail'], 'string', 'max' => 255],
+            [['name', 'slug', 'thumbnail'], 'string', 'max' => 255],
         ];
     }
 

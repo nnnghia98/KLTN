@@ -121,7 +121,7 @@ use app\modules\app\APPConfig;
         data.forEach(item => {
             icon = customIcon(item.place_type_id)
             marker = L.marker([item.lat, item.lng], {icon: icon}).bindPopup(markerPopup(item))
-            marker.ID = item.id
+            marker._leaflet_id = item.id
             DATA.layers.overlay['place'].addLayer(marker)
         })
         

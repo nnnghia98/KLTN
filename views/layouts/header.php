@@ -100,6 +100,11 @@ use app\modules\cms\services\AuthService;
                         <h6 class="mb-0 font-weight-bold">Lịch trình</h6>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<?= Yii::$app->homeUrl . 'app/plan/create' ?>" class="navbar-nav-link">
+                        <h6 class="mb-0 font-weight-bold">LET'S GO</h6>
+                    </a>
+                </li>
                 <?php if (AuthService::IsAdmin()) : ?>
                 <li class="nav-item">
                     <a href="<?= CMSConfig::getUrl('user') ?>" class="navbar-nav-link">
