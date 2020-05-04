@@ -11,7 +11,7 @@ use Yii;
  * @property string $name
  * @property string $date_start
  * @property string $date_end
- * @property int $total_day
+ * @property string $total_day
  * @property int $destination_id
  * @property string $note
  * @property string $slug
@@ -19,7 +19,7 @@ use Yii;
  * @property int $delete
  * @property int $created_by
  * @property string $created_at
- * @property string $route
+ * @property string $routes
  * @property int $viewed
  * @property string $thumbnail
  * @property string $detail
@@ -41,10 +41,10 @@ class Plan extends \yii\db\ActiveRecord
     {
         return [
             [['date_start', 'date_end', 'created_at'], 'safe'],
-            [['total_day', 'destination_id', 'status', 'delete', 'created_by', 'viewed'], 'default', 'value' => null],
-            [['total_day', 'destination_id', 'status', 'delete', 'created_by', 'viewed'], 'integer'],
-            [['note', 'route', 'detail'], 'string'],
-            [['name', 'slug', 'thumbnail'], 'string', 'max' => 255],
+            [['destination_id', 'status', 'delete', 'created_by', 'viewed'], 'default', 'value' => null],
+            [['destination_id', 'status', 'delete', 'created_by', 'viewed'], 'integer'],
+            [['note', 'routes', 'detail'], 'string'],
+            [['name', 'total_day', 'slug', 'thumbnail'], 'string', 'max' => 255],
         ];
     }
 
@@ -66,7 +66,7 @@ class Plan extends \yii\db\ActiveRecord
             'delete' => 'Delete',
             'created_by' => 'Created By',
             'created_at' => 'Created At',
-            'route' => 'Route',
+            'routes' => 'Routes',
             'viewed' => 'Viewed',
             'thumbnail' => 'Thumbnail',
             'detail' => 'Detail',

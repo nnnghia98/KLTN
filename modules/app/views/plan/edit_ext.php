@@ -59,16 +59,11 @@
         z-index: 3;
     }
 
-    .map-preview {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        background: #eeeded;
-        transition: .5s all ease;
-        z-index: 101;
-    }
+    .modal-map-dialog { max-width: 100%; }
+
+    .btn-zoom-to-place { transition: .3s all ease; }
+
+    .btn-zoom-to-place:hover { text-shadow: 2px 2px 5px #ccc; color: var(--main-color-pink) }
 </style>
 <script>
     var DATA = {
@@ -110,7 +105,9 @@
             zoomMin: 0, 
             zoomMax: 20
         }).setView([16.047079, 108.206230], 6)
+        
         initBaseLayer()
+        initOverlayLayer()
     }
 
     function initBaseLayer() {
@@ -131,10 +128,13 @@
     }
 
     function drawPlan(geojson) {
-        if(DATA.map.hasLayer(DATA.layers.overlay['plan'])) {
-            DATA.layers.overlay['plan'].clearLayers()
-        }
+        if(geojson != 'undefined') {    
+            if(DATA.map.hasLayer(DATA.layers.overlay['plan'])) {
+                DATA.layers.overlay['plan'].clearLayers()
+            }
 
+            DATA.layers.overlay['plan'] = L.geoJSON(geojson)
+        }
     }
 
     function drawPlaces(places) {
@@ -151,7 +151,7 @@
         })
 
         bounds = DATA.layers.overlay['place'].getBounds()
-        DATA.map.fitBounds(bounds, {padding: [50, 50]})
+        DATA.map.fitBounds(bounds, {padding: [20, 20]})
     }
 
     function customIcon() {

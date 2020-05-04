@@ -83,6 +83,8 @@ class PlanService
         $model->created_by = Yii::$app->user->id;
         $model->thumbnail = $desitnation->thumbnail;
         $model->viewed = 0;
+        $model->routes = [];
+        $model->detail = [];
         
         if($model->save()) {
             return $model->slug;
@@ -107,6 +109,7 @@ class PlanService
         try{
             $planid = $data['planid'];
             $detail = json_decode($data['detail'], true);
+            $routes = $data['routes'];
 
             $plan = $planid ? Plan::findOne($planid) : self::DuplicatePlan($planid);
             self::DeleteAllPlanDetail($planid);
@@ -141,6 +144,7 @@ class PlanService
 
             if($flag) {
                 $plan->detail = json_encode($detail, true);
+                $plan->routes = $routes;
                 if($plan->save()) {
                     $transaction->commit();
                     return true;

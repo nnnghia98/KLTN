@@ -280,3 +280,15 @@ a.desc:after {
 .border-radius-3 {
     border-radius: .625rem;
 }
+
+.border-radius-2 {
+    border-radius: .3125rem;
+}
+
+.border-radius-1 {
+    border-radius: .1875rem;
+}
+
+.border-radius-0 {
+    border-radius: 0rem;
+}

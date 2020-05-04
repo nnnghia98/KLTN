@@ -36,6 +36,7 @@ class PlanController extends Controller
         $model = PlanService::GetPlanBySlug($slug);
         $model = ArrayHelper::toArray($model);
         $model['detail'] = json_decode($model['detail'], true);
+        $model['routes'] = json_decode($model['routes'], true);
         return $this->render('edit', compact('model'));
     }
 
@@ -48,7 +49,7 @@ class PlanController extends Controller
         if($request->isPost) {
             $result = PlanService::SaveDetail($request->post());
             if($result) { 
-                return $this->asJson(['staus' => true]);
+                return $this->asJson(['status' => true]);
             }
 
             return $this->asJson([
