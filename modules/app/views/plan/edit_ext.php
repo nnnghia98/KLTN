@@ -146,7 +146,7 @@ use app\modules\app\APPConfig;
         }
 
         var markers = [], icon, marker, bounds
-        places.forEach(item => {
+        places.forEach((item, index) => {
             icon = customIcon()
             marker = L.marker([item.lat, item.lng], {icon: icon}).bindPopup(markerPopup(item))
             marker._leaflet_id = item.id

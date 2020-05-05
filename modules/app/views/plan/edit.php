@@ -172,7 +172,7 @@ $pageData = [
                                     <div class="list-feed">
                                         <div class="list-feed-item d-flex justify-content-between border-pink-400" v-for="(place, pidx) in plan.detail[map.dateView].places">
                                             <div class="left-item">
-                                                <div class="text-muted">Bắt đầu: {{ rangeTimeFormat(place.time_start) }}</div>
+                                                <div class="text-muted">Bắt đầu: {{ oclockTimeFormat(place.time_start) }}</div>
                                                 <a :href="'<?= APPConfig::getUrl('place/detail/') ?>' + place.slug">
                                                     <h5 class="mb-0">{{ place.name }}</h5>
                                                 </a>

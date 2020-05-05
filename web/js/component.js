@@ -155,8 +155,8 @@ Vue.component('place-item', {
                             <img :src="root + 'uploads/' + place.thumbnail" height="60" width="90" class="border-radius-3">
                         </div>
                         <div class="d-flex flex-column justify-content-between align-items-start pr-3">
-                            <a :href="root + 'app/place/detail/' + place.slug">
-                                <h5 class="mb-2 font-weight-bold">{{ place.name }}</h5>
+                            <a :href="root + 'app/place/detail/' + place.slug" target="_blank">
+                                <h4 class="mb-2 font-weight-bold">{{ place.name }}</h4>
                             </a>
                             <a data-toggle="modal" data-target="#placeListModal" @click="$emit('get-recents', didx, place.lat, place.lng)" class="text-primary border-bottom-1 border-bottom-dashed">
                                 <i class="icon-feed mr-1"></i>Quanh đây
@@ -310,6 +310,61 @@ Vue.component('place-item', {
                 this.place.time_move = Math.ceil(this.place.distance / this.movetype[this.place.move_type].velocity * 60)
                 this.$emit('on-modify-place', this.didx, this.pidx)
             }
+        }
+    }
+})
+
+Vue.component('place-item-detail', {
+    props: ['place', 'didx', 'pidx', 'placeofdate', 'movetype'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `<div class="place-item">
+        <div class="place-item-card card mb-0">
+            <div class="card-body p-2 position-relative">
+                <div class="position-relative">
+                    <div class="d-flex place-line-1">
+                        <div class="place-thumbnail mr-2">
+                            <img :src="root + 'uploads/' + place.thumbnail" height="60" width="90" class="border-radius-3">
+                        </div>
+                        <div class="d-flex flex-column justify-content-between align-items-start">
+                            <a :href="root + 'app/place/detail/' + place.slug" target="_blank">
+                                <h4 class="mb-2 font-weight-bold">{{ place.name }}</h4>
+                            </a>
+                            <span class="mb-1">Bắt đầu: {{ oclockTimeFormat(place.time_start) }}</span>
+                            <span class="mb-1">Lưu trú: {{ rangeTimeFormat(place.time_stay) }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="time-free-card card mb-0 p-2" v-if="place.time_free > 0 && pidx < placeofdate - 1">
+                    <div class="position-relative">
+                        <div class="d-flex flex-row justify-content-between align-items-center mr-4">
+                            <div class="d-flex align-items-center">
+                                <i class="icon-alarm mr-1"></i>
+                                Trống: 
+                                <span class="ml-1">{{ rangeTimeFormat(place.time_free) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="move-to-next-place" v-if="pidx < placeofdate - 1">
+            <div class="move-type-wrap d-flex align-items-center">
+                <i :class="movetype[place.move_type].icon" class="mr-2"></i>
+                <span>{{ place.distance.toFixed(2) + 'km - ' + rangeTimeFormat(place.time_move) }}</span>
+            </div>
+        </div>
+    </div>`,
+    methods: {
+        rangeTimeFormat: function(minute) {
+            return convertMinuteToTime(minute, 'range');
+        },
+
+        oclockTimeFormat: function(minute) {
+            return convertMinuteToTime(minute, 'oclock');
         }
     }
 })

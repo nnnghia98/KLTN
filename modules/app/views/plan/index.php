@@ -48,6 +48,14 @@ $pageData = [
                     </div>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-body d-flex justify-content-center">
+                    <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
+                        Thêm lịch trình mới <i class="icon-plus2 ml-2"></i>
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="col-md-8 data-wrap">
             <div class="data-header">
@@ -73,12 +81,12 @@ $pageData = [
                                 <li v-for="item in plans">
                                     <div class="media">
                                         <div class="mr-2">
-                                            <a :href="'<?= APPConfig::getUrl('plan/') ?>' + item.slug" class="media-list-photo">
+                                            <a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + item.slug" class="media-list-photo">
                                                 <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + item.thumbnail" height="150" width="225" :alt="item.name">
                                             </a>
                                         </div>
                                         <div class="media-body">
-                                            <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('plan/') ?>' + item.slug">{{ item.name }}</a></h5>
+                                            <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + item.slug">{{ item.name }}</a></h5>
                                             {{ item.subtitle }}
                                             <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                         </div>
