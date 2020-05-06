@@ -52,7 +52,7 @@ $pageData = [
             <div class="card">
                 <div class="card-body d-flex justify-content-center">
                     <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
-                        Thêm lịch trình mới <i class="icon-plus2 ml-2"></i>
+                        Lên lịch trình <i class="icon-plus2 ml-2"></i>
                     </a>
                 </div>
             </div>

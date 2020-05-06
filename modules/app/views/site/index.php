@@ -1,135 +1,122 @@
-<style>
-    .homepage_top {
-        height: 50vh;
-        background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('<?= Yii::$app->homeUrl . 'resources/images/banner1.jpg' ?>');
-        background-size: cover;
-        background-position: center;
-        border: 1px solid #ccc;
-        border-radius: .1875rem;
-    }
+<?php
 
-    .homepage_top #page-title-heading {
-        color: white;
-        font-size: 28pt;
-        margin-top: 80px;
+use app\modules\app\APPConfig;
 
-    }
+include('site_ext.php')
+?>
 
-    .homepage_top .text-search {
-        border-top-color: #ccc !important;
-        border: 1px solid #ccc;
-        border-radius: .1875rem;
-        margin-left: 43%;
-
-    }
-
-    #title_home {
-        font-style: italic;
-        font-size: 18pt;
-        color: black;
-    }
-
-    #title-home h1 {
-        font-style: italic;
-        font-size: 13pt;
-        color: red;
-    }
-
-    #top {
-        height: 20vh;
-    }
-
-    .plan {
-        margin-top: 2vh;
-        border: 1px solid #ccc;
-        border-radius: .1875rem;
-        height: 40vh;
-        background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), url('<?= Yii::$app->homeUrl . 'resources/images/plan.jpg' ?>');
-        background-size: cover;
-        background-position: center;
-    }
-
-    .plan h1 {
-        color: red;
-        font-family: blue;
-        margin-top: 45px;
-    }
-
-    .plan h1 a {
-        color: antiquewhite;
-    }
-
-    .container {
-        margin-right: auto;
-        margin-left: auto;
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .destination-grid-item {
-        background-position-x: 50%;
-        background-position-y: 50%;
-        background-size: cover;
-        background-attachment: scroll;
-        margin-bottom: 5px;
-        margin-top: 0px;
-        padding: 0px;
-        height: 300px;
-    }
-</style>
-<div id="homepage" class="homepage" style="height: 200vh">
-    <div class="homepage_top">
-        <div class="text-center py-3" id="page-title-heading">Cuộc đời là những chuyến đi</div>
-        <div class="input-group">
-            <input type="text" class="text-search" placeholder="Bạn muốn đi đâu?" v-model="keyword">
-            <span class="input-group-text bg-secondary border-secondary text-white">
-                <i class="icon-search4"></i>
-            </span>
-
+<div class="homepage" id="homepage">
+    <div class="header-slider">
+        <div id="travel-sharing-slider" class="carousel slide" data-ride="carousel" data-pause="true">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="d-block w-100" src="<?= Yii::$app->homeUrl . 'resources/images/slide2.jpg' ?>">
+                    <div class="carousel-caption-custom">
+                        <h5 class="caption-label text-center">DU LỊCH VÀ CHIA SẺ</h5>
+                        <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn bg-pink-400 btn-lg rounded-round font-weight-bold">
+                            Lên lịch trình <i class="icon-plus2 ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="d-block w-100" src="<?= Yii::$app->homeUrl . 'resources/images/slide1.jpg' ?>">
+                    <div class="carousel-caption-custom">
+                        <h5 class="caption-label text-center">HÀNG NGHÌN ĐIỂM DU LỊCH TRÊN TOÀN QUỐC</h5>
+                        <a href="<?= APPConfig::getUrl('place/visit') ?>" class="btn bg-pink-400 btn-lg rounded-round font-weight-bold">
+                            Khám phá ngay <i class="icon-paperplane ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#travel-sharing-slider" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#travel-sharing-slider" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
         </div>
     </div>
 
-
-    <div class="text-center py-3" id="top">
-        <div id="title_home">CẨM NANG DU LỊCH<br>
-            <h1> Tất cả những thông tin hữu ích bạn cần tham khảo để lên kế hoạch cho chuyến du lịch của mình</h1>
+    <div class="homage-page-content my-3">
+        <div class="destination-wrap homepage-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1 class="text-center text-uppercase font-weith-bold">Điểm đến nổi bật</h1>
+                </div>
+            </div>
         </div>
-        <div id='logo'>
-            <button type="btn_lg" class="btn btn-outline bg-indigo-400 border-indigo400"><a href="<?= Yii::$app->homeUrl . 'app/destination/map' ?>"><img src="<?= Yii::$app->homeUrl ?>resources/images/lgbd.jpg" alt=""></a></button>
-            <button type="btn_lg" class="btn btn-outline bg-indigo-400 border-indigo400"><a href="<?= Yii::$app->homeUrl . 'app/destination' ?>"><img src="<?= Yii::$app->homeUrl ?>resources/images/dd.jpg" alt=""></a></button>
-            <button type="btn_lg" class="btn btn-outline bg-indigo-400 border-indigo400"><a href="<?= Yii::$app->homeUrl . 'app/plan' ?>"><img src="<?= Yii::$app->homeUrl ?>resources/images/lt.jpg" alt=""></a></button>
-            <button type="btn_lg" class="btn btn-outline bg-indigo-400 border-indigo400"><a href="<?= Yii::$app->homeUrl . 'app/place/rest' ?>"><img src="<?= Yii::$app->homeUrl ?>resources/images/ks.jpg" alt=""></a></button>
-            <button type="btn_lg" class="btn btn-outline bg-indigo-400 border-indigo400"><a href="<?= Yii::$app->homeUrl . 'app/place/food' ?>"><img src="<?= Yii::$app->homeUrl ?>resources/images/qa.png" alt=""></a></button>
+        <div class="plan-introduction-wrap homepage-section">
+            <div class="w-100 h-100 d-flex justify-content-center align-items-center flex-column content">
+                <h1 class="text-white text-uppercase font-weight-bold" style="font-size: 2rem;">Bắt đầu chuyến du lịch của bạn</h1>
+                <h3 class="text-white">Hãy xây dựng một lịch trình du lịch chi tiết của riêng bạn và chia sẻ tới mọi người ngay nào!</h3>
+                <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn btn-outline bg-white border-white text-white btn-lg rounded-round font-weight-bold mt-3">
+                    Lên lịch trình <i class="icon-plus2 ml-2"></i>
+                </a>
+            </div>
         </div>
-    </div>
-    <div class="plan">
-
-        <div class="text-center py-3">
-            <h1>Hãy đến với chúng tôi và viết nên câu chuyện của chính bạn<h1>
-                    <button type="btn_plan" class="btn btn-danger rounded-round">
-                        <a href="<?= Yii::$app->homeUrl . 'app/plan' ?>">Tạo lịch trình</a></button>
+        <div class="plan-wrap homepage-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1 class="text-center text-uppercase font-weith-bold">Lịch trình được tạo gần đây</h1>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="home_destination">
-        <a href="<?= Yii::$app->homeUrl . 'app/destination' ?>">
-            <h1>Những địa điểm nổi bật</h1>
-        </a>
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/HaN.jpg" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/DN.jpg" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/Hue.jpg" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/DL.jpg" alt="">
-        <a href="<?= Yii::$app->homeUrl . 'app/destination' ?>"><button type="btn_plan" class="btn btn-outline-danger">Xem Thêm</button></a>
-    </div>
-    <div class="home_visit">
-        <a href="<?= Yii::$app->homeUrl . 'app/place' ?>">
-            <h1>Điểm dừng chân tuyệt vời</h1>
-        </a>
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/dct.png" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/gbt.jpg" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/lvh.jpg" alt="">
-        <img src="<?= Yii::$app->homeUrl ?>resources/images/bali.png" alt="">
-        <a href="<?= Yii::$app->homeUrl . 'app/place/visit' ?>"><button type="btn_plan" class="btn btn-outline-danger">Xem Thêm</button>
+        <div class="feature-wrap homepage-section">
+            <div class="container">
+                <div class="row feature-list">
+                    <div class="col-md-3 feature-item">
+                        <div class="feature-icon">
+                            <img src="<?= Yii::$app->homeUrl . 'resources/images/beach.png' ?>" width="64" height="64">
+                        </div>
+                        <div class="feature-content mt-3">
+                            <h3>Địa điểm phong phú</h3>
+                            <p>Hàng nghìn điểm đến và địa điểm du lịch trong và ngoài nước được chúng tôi cập nhật thường xuyên</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-icon">
+                            <img src="<?= Yii::$app->homeUrl . 'resources/images/planning.png' ?>" width="64" height="64">
+                        </div>
+                        <div class="feature-content mt-3">
+                            <h3>Lịch trình cụ thể</h3>
+                            <p>Lịch trình du lịch được xây dựng cụ thể tại từng điểm dừng chân: Thời gian bắt đầu, lưu trú, di chuyển, phương tiện di chuyển, ...</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-icon">
+                            <img src="<?= Yii::$app->homeUrl . 'resources/images/map.png' ?>" width="64" height="64">
+                        </div>
+                        <div class="feature-content mt-3">
+                            <h3>Bản đồ chi tiết</h3>
+                            <p>Giao diện bản đồ mô tả chi tiết lịch trình di chuyển theo từng ngày bao gồm địa điểm và tuyến đường</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="feature-icon">
+                            <img src="<?= Yii::$app->homeUrl . 'resources/images/share.png' ?>" width="64" height="64">
+                        </div>
+                        <div class="feature-content mt-3">
+                            <h3>Kết nối cộng đồng</h3>
+                            <p>Cùng chia sẻ lịch trình và kinh nghiệm du lịch tại từng điểm đến của bạn cho cộng đồng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="place-wrap homepage-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1 class="text-center text-uppercase font-weith-bold">Địa điểm được quan tâm</h1>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-</div>
+<script>
+    $(function() {
+        // $('#travel-sharing-slider').carousel('pause')
+    })
+</script>
