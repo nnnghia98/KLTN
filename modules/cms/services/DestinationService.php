@@ -24,6 +24,19 @@ class DestinationService
 
     public static $OBJECT_TYPE = 'app\modules\cms\models\Destination';
 
+    public static function GetTopDestinations($limit) {
+        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
+        $destinations = (new Query())
+                        ->select(['d.name', 'd.thumbnail', 'd.subtitle', 'd.slug', 'i.avg_rating', 'i.count_rating'])
+                        ->from(['d' => 'destination'])
+                        ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->orderBy('i.avg_rating DESC')
+                        ->limit($limit)
+                        ->all();
+        return $destinations;
+    }
+
     public static function GetListAppPage($page, $perpage, $keyword, $comment, $rating) {
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $query = (new Query())

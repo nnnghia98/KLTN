@@ -31,6 +31,19 @@ class PlanService
     public static $HERE_API_KEY = 'hPtC4kp3SDaqlFsNbcT_zPpyknvCfWEdcxejzcUk8zI';
     public static $OBJECT_TYPE = 'app\modules\cms\models\Plan';
 
+    public static function GetNewestPlans($limit) {
+        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
+        $plans = (new Query())
+                        ->select(['p.*', 'i.*'])
+                        ->from(['p' => 'plan'])
+                        ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->orderBy('p.created_at DESC')
+                        ->limit($limit)
+                        ->all();
+        return $plans;
+    }
+
     public static function GetListAppPage($page, $perpage, $destination, $comment, $rating) {
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $query = (new Query())

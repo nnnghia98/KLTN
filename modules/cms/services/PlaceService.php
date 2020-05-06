@@ -29,6 +29,19 @@ class PlaceService
 
     public static $OBJECT_TYPE = 'app\modules\cms\models\Place';
 
+    public static function GetTopPlaces($limit) {
+        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
+        $places = (new Query())
+                        ->select(['p.name', 'p.thumbnail', 'p.subtitle', 'p.slug', 'i.avg_rating', 'i.count_rating'])
+                        ->from(['p' => 'place'])
+                        ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->orderBy('i.avg_rating DESC')
+                        ->limit($limit)
+                        ->all();
+        return $places;
+    }
+
     public static function GetFoodListAppPage($page, $perpage, $keyword, $comment, $rating, $destination) {
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $query = (new Query())

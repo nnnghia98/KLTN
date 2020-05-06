@@ -117,6 +117,52 @@ include('site_ext.php')
 
 <script>
     $(function() {
-        // $('#travel-sharing-slider').carousel('pause')
+        var vm = new Vue({
+            el: '#homepage',
+            data: {
+                destinations: null,
+                places: null,
+                plans: null
+            },
+            created: function() {
+                this.getDestinations();
+                this.getPlaces();
+                this.getPlans();
+            },
+            methods: {
+                getDestinations: function() {
+                    var _this = this,
+                        api = '<?= APPConfig::getUrl('site/get-destinations') ?>'
+
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if(resp.status) {
+                            _this.destinations = resp.destinations
+                        }
+                    })
+                },
+
+                getPlaces: function() {
+                    var _this = this,
+                        api = '<?= APPConfig::getUrl('site/get-places') ?>'
+
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if(resp.status) {
+                            _this.places = resp.places
+                        }
+                    })
+                },
+
+                getPlans: function() {
+                    var _this = this,
+                        api = '<?= APPConfig::getUrl('site/newest-plans') ?>'
+
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if(resp.status) {
+                            _this.plans = resp.plans
+                        }
+                    })
+                }
+            }
+        })
     })
 </script>
