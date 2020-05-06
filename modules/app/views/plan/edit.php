@@ -66,7 +66,7 @@ $pageData = [
                                 </place-item>
                             </transition-group>
                         </draggable>
-                        <div class="place-item btn-add-place mt-3" data-toggle="modal" data-target="#placeListModal" @click="dateTarget = didx">
+                        <div class="place-item btn-add-place mt-3" data-toggle="modal" data-target="#placeListModal" @click="openPlacesModal(didx)">
                             <div class="add-place-content d-flex justify-content-center align-items-center">
                                 <h4 class="mb-0"><i class="icon-plus2 mr-2"></i> Thêm địa điểm</h4>
                             </div>
@@ -252,7 +252,7 @@ $pageData = [
             watch: {
                 queryPage: function() {
                     this.getPlaces()
-                }
+                },
             },
             methods: {
                 getPlaces: function() {
@@ -273,15 +273,22 @@ $pageData = [
                     })
                 },
 
+                openPlacesModal: function(didx) {
+                    this.dateTarget = didx
+
+                    this.places.query.center = ['', '']
+                    this.places.query.page = 1
+                    this.$nextTick(function() {
+                        this.getPlaces()
+                    })
+                },
+
                 getRecents: function(didx, lat, lng) {
                     this.dateTarget = didx
-                    this.places.query = {
-                        center: [lat, lng],
-                        type: '<?= PlaceService::$TYPE['VISIT'] ?>',
-                        keyword: '',
-                        page: 1,
-                        sort: 'avg_rating'
-                    }
+                    
+                    this.places.query.center = [lat, lng]
+                    this.places.query.keyword = ''
+                    this.places.query.page = 1
                     this.$nextTick(function() {
                         this.getPlaces()
                     })
@@ -289,8 +296,6 @@ $pageData = [
 
                 searchPlaces: function() {
                     this.places.query.page = 1
-                    this.places.query.lat = ''
-                    this.places.query.lng = ''
 
                     this.$nextTick(function() {
                         this.getPlaces()
