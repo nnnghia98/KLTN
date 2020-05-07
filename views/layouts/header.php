@@ -63,7 +63,7 @@ use app\modules\cms\services\AuthService;
     }
 </style>
 
-<div class="navbar navbar-expand-md navbar-light navbar-static">
+<div class="navbar navbar-expand-md navbar-light navbar-static wow animate fadeInDown">
     <div class="container">
         <div class="navbar-brand p-2 wmin-250">
             <a class="sitename d-flex align-items-center" href="<?= Yii::$app->homeUrl ?>">

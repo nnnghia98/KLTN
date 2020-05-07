@@ -17,7 +17,7 @@
         color: #fff;
     }
 </style>
-<footer class="page-footer navbar-light pt-4">
+<footer class="page-footer navbar-light pt-4 wow animate fadeInUp">
     <div class="container text-center text-md-left">
         <div class="row">
             <div class="col-md-3 mx-auto">

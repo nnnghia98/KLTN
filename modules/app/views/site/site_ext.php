@@ -10,10 +10,6 @@
         left: 50%;
         width: 80%;
         transform: translate(-50%, -50%);
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
     }
 
     .carousel-caption-custom .caption-label {

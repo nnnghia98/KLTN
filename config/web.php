@@ -100,7 +100,7 @@ $config = [
         'class' => 'yii\filters\AccessControl',
         'rules' => [
             [
-                'controllers' => ['site'],
+                'controllers' => ['site', 'app/site', 'app/place', 'app/destination', 'app/plan'],
                 'allow' => true,
             ],
             [
