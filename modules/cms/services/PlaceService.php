@@ -32,7 +32,7 @@ class PlaceService
     public static function GetTopPlaces($limit) {
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $places = (new Query())
-                        ->select(['p.name', 'p.thumbnail', 'p.subtitle', 'p.slug', 'i.avg_rating', 'i.count_rating'])
+                        ->select(['p.name', 'p.thumbnail', 'p.address', 'p.slug', 'i.avg_rating', 'i.count_rating'])
                         ->from(['p' => 'place'])
                         ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
                         ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])

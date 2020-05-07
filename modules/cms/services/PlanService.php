@@ -32,12 +32,11 @@ class PlanService
     public static $OBJECT_TYPE = 'app\modules\cms\models\Plan';
 
     public static function GetNewestPlans($limit) {
-        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $plans = (new Query())
-                        ->select(['p.*', 'i.*'])
+                        ->select(['p.name', 'p.thumbnail', 'p.slug', 'u.avatar as author_avatar', 'u.slug as author_slug', 'u.fullname as author'])
                         ->from(['p' => 'plan'])
-                        ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
-                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
+                        ->leftJoin(['u' => 'auth_user'], 'p.created_by = u.id')
+                        ->where(['and', ['p.status' => self::$STATUS['ACTIVE']], ['p.delete' => self::$DELETE['ALIVE']]])
                         ->orderBy('p.created_at DESC')
                         ->limit($limit)
                         ->all();

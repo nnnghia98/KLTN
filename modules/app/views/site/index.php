@@ -11,7 +11,7 @@ include('site_ext.php')
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <img class="d-block w-100" src="<?= Yii::$app->homeUrl . 'resources/images/slide2.jpg' ?>">
-                    <div class="carousel-caption-custom">
+                    <div class="carousel-caption-custom wow animated fadeInDown">
                         <h5 class="caption-label text-center">DU LỊCH VÀ CHIA SẺ</h5>
                         <a href="<?= APPConfig::getUrl('plan/create') ?>" class="btn bg-pink-400 btn-lg rounded-round font-weight-bold">
                             Lên lịch trình <i class="icon-plus2 ml-2"></i>
@@ -45,6 +45,23 @@ include('site_ext.php')
                 <div class="section-header">
                     <h1 class="text-center text-uppercase font-weith-bold">Điểm đến nổi bật</h1>
                 </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-md-4" v-for="d in destinations" v-cloak>
+                            <div class="card overflow-hidden">
+                                <div class="card-image">
+                                    <img :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + d.thumbnail" class="w-100 h-auto" :alt="'travel sharing ' + d.name">
+                                    <div class="card-image-overlay p-2">
+                                        <a :href="'<?= APPConfig::getUrl('destination/detail/') ?>' + d.slug">
+                                            <h2 class="destination-title ellipsis-1">{{ d.name }}</h2>
+                                            <h5 class="destination-subtitle ellipsis-1">{{ d.subtitle }}</h5>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="plan-introduction-wrap homepage-section">
@@ -60,6 +77,31 @@ include('site_ext.php')
             <div class="container">
                 <div class="section-header">
                     <h1 class="text-center text-uppercase font-weith-bold">Lịch trình được tạo gần đây</h1>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-md-3" v-for="p in plans" v-cloak>
+                            <div class="card overflow-hidden">
+                                <div class="card-img-actions overflow-hidden">
+                                    <img class="card-img img-fluid w-100 h-auto" :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.thumbnail" :alt="'travel sharing ' + p.name">
+                                </div>
+                                <div class="p-2 mt-1">
+                                    <div class="d-flex align-items-start flex-nowrap">
+                                        <div>
+                                            <a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + p.slug">
+                                                <h4 class="font-weight-semibold">{{ p.name }}</h4>
+                                            </a>
+                                            <div>
+                                                <img :src="p.author_avatar ? '<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.author_avatar : '<?= Yii::$app->homeUrl . 'resources/images/no_avatar.jpg' ?>'"
+                                                    class="mr-1 rounded-circle" width="40" height="40">
+                                                <a :href="'<?= APPConfig::getUrl('user/') ?>' + p.author_slug">{{ p.author }}</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,6 +151,28 @@ include('site_ext.php')
             <div class="container">
                 <div class="section-header">
                     <h1 class="text-center text-uppercase font-weith-bold">Địa điểm được quan tâm</h1>
+                </div>
+                <div class="section-content">
+                    <div class="row">
+                        <div class="col-md-3" v-for="p in places" v-cloak>
+                            <div class="card overflow-hidden">
+                                <div class="card-img-actions overflow-hidden">
+                                    <img class="card-img img-fluid w-100 h-auto" :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.thumbnail" :alt="'travel sharing ' + p.name">
+                                </div>
+                                <div class="p-2 mt-1">
+                                    <div class="d-flex align-items-start flex-nowrap">
+                                        <div class="w-100">
+                                            <a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + p.slug">
+                                                <h4 class="font-weight-semibold ellipsis-1">{{ p.name }}</h4>
+                                            </a>
+                                            <p class="text-muted ellipsis-2"><i class="icon-location4 mr-1"></i>{{ p.address }}</p>
+                                            <rating-star-static :rating="p.avg_rating"></rating-star-static>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
