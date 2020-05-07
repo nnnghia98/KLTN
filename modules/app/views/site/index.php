@@ -158,24 +158,7 @@ include('site_ext.php')
                 </div>
                 <div class="section-content mt-4">
                     <div class="row">
-                        <div class="col-md-3" v-for="p in places" v-cloak>
-                            <div class="card overflow-hidden">
-                                <div class="card-img-actions overflow-hidden">
-                                    <img class="card-img img-fluid w-100 h-auto" :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.thumbnail" :alt="'travel sharing ' + p.name">
-                                </div>
-                                <div class="p-2 mt-1">
-                                    <div class="d-flex align-items-start flex-nowrap">
-                                        <div class="w-100">
-                                            <a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + p.slug">
-                                                <h4 class="font-weight-semibold ellipsis-1">{{ p.name }}</h4>
-                                            </a>
-                                            <p class="text-muted ellipsis-2"><i class="icon-location4 mr-1"></i>{{ p.address }}</p>
-                                            <rating-star-static :rating="p.avg_rating"></rating-star-static>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <place-in-row v-for="place in places" :place="place" :col="3" :key="place.id"></place-in-row>
                     </div>
                 </div>
             </div>

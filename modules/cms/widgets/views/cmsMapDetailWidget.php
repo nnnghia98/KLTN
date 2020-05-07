@@ -42,9 +42,10 @@
     function initMarker() {
         var lat = '<?= $lat ?>';
         var lng = '<?= $lng ?>';
+        var type = '<?= $type ?>'
         
         var iconOption = L.icon({
-            iconUrl: '<?= Yii::$app->homeUrl . "resources/images/marker_hcmgis.png" ?>',
+            iconUrl: '<?= Yii::$app->homeUrl . 'resources/images/' ?>' + `marker-${type}.png`,
             iconSize:     [32, 32],
             iconAnchor:   [16, 32],
             popupAnchor:  [0, -20]

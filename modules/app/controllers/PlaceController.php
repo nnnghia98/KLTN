@@ -2,9 +2,11 @@
 
 namespace app\modules\app\controllers;
 
-use app\modules\cms\services\DestinationService;
 use app\modules\cms\services\PlaceService;
+use app\modules\cms\services\FileService;
+use Yii;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 
 class PlaceController extends Controller
 {
@@ -32,6 +34,11 @@ class PlaceController extends Controller
 
     public function actionRestMap() {
         return $this->render('rest-map');
+    }
+
+    public function actionDetail($slug) {
+        $place = PlaceService::GetPlaceBySlug($slug);
+        return $this->render('detail', compact('place'));
     }
  
     /**-------------API-----------------*/
@@ -77,5 +84,64 @@ class PlaceController extends Controller
         ];
 
         return $this->asJson($response);
+    }
+
+    public function actionGetImages($id) {
+        $images = FileService::GetObjectImages(PlaceService::$OBJECT_TYPE, $id);
+        $response = [
+            'status' => true, 
+            'images' => $images
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionGetNearbyPlaces($lat, $lng, $type) {
+        $places = PlaceService::GetNearbyPlaces($lat, $lng, $type);
+        $response = [
+            'status' => true, 
+            'places' => $places
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionGetRelatePlans($id) {
+        $plans = PlaceService::GetRelatePlans($id);
+        $response = [
+            'status' => true, 
+            'plans' => $plans
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionGetComments($id, $page) {
+        $comments = PlaceService::GetComments($id, $page, 10);
+        $response = [
+            'status' => true, 
+            'comments' => $comments
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionGetInteractive($id) {
+        $interactive = PlaceService::GetInteractiveOfCurrentUser($id);
+        $response = [
+            'status' => true, 
+            'interactive' => $interactive
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionSubmitComment() {
+        $request = Yii::$app->request;
+        if($request->isPost) {
+            $result = PlaceService::SubmitComment($request->post());
+            if($result === true) {
+                return $this->asJson(['status' => true]);
+            }
+            
+            return $this->asJson(['status' => true, 'message' => $result]);
+        }
+
+        throw new NotFoundHttpException();
     }
 }

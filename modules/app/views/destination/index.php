@@ -5,11 +5,11 @@ use app\modules\app\PathConfig;
 
 $pageData = [
     'pageTitle' => 'Hàng trăm điểm đến trên toàn quốc',
-    'pageBreadcrumb' => 'Điểm đến',
+    'pageBreadcrumb' => [['Điểm đến']],
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/destination-header.jpg'
 ];
 ?>
-<?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
 <div class="container mt-3" id="destination-page">
     <div class="row">
@@ -91,7 +91,7 @@ $pageData = [
                                                 <a :href="'<?= APPConfig::getUrl('destination/detail/') ?>' + item.slug">{{ item.name }}</a>
                                             </h4>
                                             <h6 class="mb-0 text-muted">{{ item.subtitle }}</h6>
-                                            <rating-star-static :rating="item.avg_rating"></rating-star-static>
+                                            <rating-star-static :rating="item.avg_rating" :key="item.slug"></rating-star-static>
                                             <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                         </div>
                                         <div class="ml-1">
@@ -116,8 +116,6 @@ $pageData = [
 
 <script>
     $(function() {
-        var url = window.location.href
-    console.log(url)
         var vm = new Vue({
             el: '#destination-page',
             data: {

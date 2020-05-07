@@ -7,11 +7,11 @@ use app\modules\contrib\gxassets\GxVueSelectAsset;
 GxVueSelectAsset::register($this);
 $pageData = [
     'pageTitle' => 'Địa điểm ăn uống',
-    'pageBreadcrumb' => 'Ăn uống',
+    'pageBreadcrumb' => [['Ăn uống']],
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/destination-header.jpg'
 ];
 ?>
-<?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
 <div class="container mt-3" id="food-page">
     <div class="row">

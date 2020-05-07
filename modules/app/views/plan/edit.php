@@ -18,10 +18,13 @@ include('edit_ext.php');
 
 $pageData = [
     'pageTitle' => $model['name'],
-    'pageBreadcrumb' => 'Chỉnh sửa lịch trình',
+    'pageBreadcrumb' => [
+        ['Lịch trình', APPConfig::getUrl('plan')],
+        ['Chỉnh sửa lịch trình']
+    ],
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/plan-header.jpg'
 ]; ?>
-<?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 <div class="content mt-3" id="edit-plan-page">
     <div class="edit-plan-content">
         <div class="card bg-indigo-400">

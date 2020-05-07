@@ -10,10 +10,13 @@ GxVueSelectAsset::register($this);
 GxVuetifyAsset::register($this);
 $pageData = [
     'pageTitle' => 'Tạo một lịch trình du lịch chi tiết nào',
-    'pageBreadcrumb' => 'Tạo lịch trình',
+    'pageBreadcrumb' => [
+        ['Lịch trình', APPConfig::getUrl('plan')],
+        ['Tạo lịch trình']
+    ],
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/plan-header.jpg'
 ]; ?>
-<?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
 <style>
     .v-application--wrap {

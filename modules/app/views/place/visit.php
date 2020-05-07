@@ -8,11 +8,11 @@ GxVueSelectAsset::register($this);
 
 $pageData = [
     'pageTitle' => 'Địa điểm tham quan',
-    'pageBreadcrumb' => 'Tham quan',
+    'pageBreadcrumb' => [['Tham quan']],
     'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/destination-header.jpg'
 ];
 ?>
-<?= $this->render(PathConfig::getAppViewPath('pageListHeader'), $pageData); ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
 <div class="container mt-3" id="visit-page">
     <div class="row">

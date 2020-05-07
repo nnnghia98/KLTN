@@ -47,6 +47,14 @@ function toastMessage(type, message) {
     });
 };
 
+function formatTime(time) {
+    var created_at = new Date(time);
+    var formatted_time = created_at.getDate().toString().padStart(2, '0')
+        + "/" + (created_at.getMonth() + 1).toString().padStart(2, '0')
+        + "/" + created_at.getFullYear();
+    return formatted_time;
+};
+
 function formatDate(date) {
     if (!date) return null
     var [year, month, day] = date.split('-')

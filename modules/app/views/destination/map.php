@@ -53,7 +53,7 @@ GxLeafletAsset::register($this);
                                                             <a :href="'<?= APPConfig::getUrl('destination/') ?>' + item.slug">{{ item.name }}</a>
                                                         </h4>
                                                         <h6 class="mb-0 text-muted">{{ item.subtitle }}</h6>
-                                                        <rating-star-static :rating="item.avg_rating"></rating-star-static>
+                                                        <rating-star-static :rating="item.avg_rating" :key="item.slug"></rating-star-static>
                                                         <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                                     </div>
                                                     <div class="ml-1">

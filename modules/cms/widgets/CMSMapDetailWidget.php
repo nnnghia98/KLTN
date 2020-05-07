@@ -14,11 +14,13 @@ class CMSMapDetailWidget extends Widget
 {
     public $lat;
     public $lng;
+    public $type;
     public function run()
     {
         $lat = $this->lat ? $this->lat : 16.047079;
         $lng = $this->lng ? $this->lng : 108.206230;
-        return $this->render('cmsMapDetailWidget', compact('lat', 'lng'));
+        $type = $this->type ? $this->type : 'destination';
+        return $this->render('cmsMapDetailWidget', compact('lat', 'lng', 'type'));
     }
 
 }

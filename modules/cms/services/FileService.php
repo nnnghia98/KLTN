@@ -61,4 +61,14 @@ class FileService
         $newname = SiteService::ConvertStringToSlug($newname, '_');
         return [$newname, $ext];
     }
+
+    public static function GetObjectImages($objecttype, $objectid) {
+        $images = (new Query())
+                    ->select('f.path')
+                    ->from('file_ref as r')
+                    ->leftJoin('file_repo as f', 'r.file_id = f.id')
+                    ->where(['and', ['r.object_type' => $objecttype], ['r.object_id' => $objectid]])
+                    ->column();
+        return $images;
+    }
 }

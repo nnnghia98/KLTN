@@ -76,20 +76,17 @@ Vue.component('place', {
     <li>
         <div class="media">
             <div class="mr-2" style="width: 30%; max-width: 225px">
-                <a :href="root + '/app/place/visit/' + place.slug" class="media-list-photo">
-                    <img :src="root + '/uploads/' + place.thumbnail" :alt="place.name" class="w-100 h-auto">
+                <a :href="root + 'app/place/detail/' + place.slug" class="media-list-photo">
+                    <img :src="root + 'uploads/' + place.thumbnail" :alt="place.name" class="w-100 h-auto">
                 </a>
             </div>
             <div class="media-body">
                 <h4 class="media-title font-weight-bold">
-                    <a :href="root + '/app/place/visit/' + place.slug">{{ place.name }}</a>
+                    <a :href="root + 'app/place/detail/' + place.slug">{{ place.name }}</a>
                 </h4>
                 <h6 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h6>
-                <rating-star-static :rating="place.avg_rating"></rating-star-static>
+                <rating-star-static :rating="place.avg_rating" :key="place.slug"></rating-star-static>
                 <p class="text-muted"><i class="icon-comment mr-1"></i> {{ place.count_comment ? place.count_comment : 0 }}</p>
-            </div>
-            <div class="ml-1">
-                <a :href="root + '/app/place/' + type + '-map?target=' + place.slug" class="btn btn-sm btn-icon btn-outline-primary" title="Xem trên bản đồ"><i class="icon-location4"></i></a>
             </div>
         </div>
     </li>`
@@ -106,16 +103,16 @@ Vue.component('place-choosen', {
     template: `<li>
         <div class="media">
             <div class="mr-2" style="width: 30%; max-width: 225px">
-                <a :href="root + '/app/place/visit/' + place.slug" class="media-list-photo">
-                    <img :src="root + '/uploads/' + place.thumbnail" :alt="place.name" class="w-100 h-auto">
+                <a :href="root + 'app/place/detail/' + place.slug" class="media-list-photo">
+                    <img :src="root + 'uploads/' + place.thumbnail" :alt="place.name" class="w-100 h-auto">
                 </a>
             </div>
             <div class="media-body">
                 <h4 class="media-title font-weight-bold">
-                    <a :href="root + '/app/place/visit/' + place.slug">{{ place.name }}</a>
+                    <a :href="root + 'app/place/detail/' + place.slug">{{ place.name }}</a>
                 </h4>
                 <h6 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h6>
-                <rating-star-static :rating="place.avg_rating"></rating-star-static>
+                <rating-star-static :rating="place.avg_rating" :key="place.slug"></rating-star-static>
                 <p class="text-muted"><i class="icon-comment mr-1"></i> {{ place.count_comment ? place.count_comment : 0 }}</p>
             </div>
             <div class="ml-2">
@@ -365,6 +362,128 @@ Vue.component('place-item-detail', {
 
         oclockTimeFormat: function(minute) {
             return convertMinuteToTime(minute, 'oclock');
+        }
+    }
+})
+
+Vue.component('place-in-row', {
+    props: ['place', 'col'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `
+    <div class="place-item-in-row" :class="'col-md-' + col" v-cloak>
+        <div class="card overflow-hidden">
+            <div class="card-img-actions overflow-hidden">
+                <img class="card-img img-fluid w-100 h-auto" :src="root + 'uploads/' + place.thumbnail" :alt="'travel sharing ' + place.name">
+            </div>
+            <div class="p-2 mt-1">
+                <div class="d-flex align-items-start flex-nowrap">
+                    <div class="w-100">
+                        <a :href="root + 'app/plan/detail/' + place.slug">
+                            <h4 class="font-weight-semibold ellipsis-1">{{ place.name }}</h4>
+                        </a>
+                        <p class="text-muted ellipsis-2"><i class="icon-location4 mr-1"></i>{{ place.address }}</p>
+                        <rating-star-static :rating="place.avg_rating" :key="place.slug"></rating-star-static>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`
+})
+
+Vue.component('plan-in-row', {
+    props: ['plan', 'col'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `
+    <div class="plan-item-in-row" :class="'col-md-' + col" v-cloak>
+        <div class="card overflow-hidden">
+            <div class="card-img-actions overflow-hidden">
+                <img class="card-img img-fluid w-100 h-auto" :src="root + 'uploads/' + plan.thumbnail" :alt="'travel sharing ' + plan.name">
+            </div>
+            <div class="p-2 mt-1">
+                <div class="d-flex align-items-start flex-nowrap">
+                    <div>
+                        <a :href="root + 'app/plan/detail/' + plan.slug">
+                            <h4 class="font-weight-semibold">{{ plan.name }}</h4>
+                        </a>
+                        <div>
+                            <img :src="plan.author_avatar ? root + 'uploads/' + plan.author_avatar : root + 'resources/images/no_avatar.jpg'"
+                                class="mr-1 rounded-circle" width="35" height="35">
+                            <a :href="root + 'app/user/' + plan.author_slug">{{ plan.author }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`
+})
+
+Vue.component('comment-list', {
+    props: ['comments'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `
+    <ul class="media-list media-chat">
+        <li class="media" v-for="cmt in comments">
+            <div class="mr-3">
+                <a :href="root + 'user/' + cmt.author_slug">
+                    <img :src="cmt.author_avatar ? root + 'uploads/' + cmt.author_avatar : root + 'resources/images/no_avatar.jpg'" class="rounded-circle" width="40" height="40" style="object-fit: cover">
+                </a>
+            </div>
+
+            <div class="media-body">
+                <div class="media-chat-item bg-indigo-400">{{ cmt.comment }}</div>
+                <div class="font-size-sm text-muted mt-2"><a href="#"><b>{{ cmt.author }}</b></a> • {{ formatTime(cmt.created_at) }}</div>
+            </div>
+        </li>
+    </ul>`,
+    methods: {
+        formatTime: function(time) {
+            return formatTime(time);
+        }
+    }
+})
+
+Vue.component('rating', {
+    props: ['star'],
+    template: `<div class="rating-wrap d-flex">
+        <i arian-hidden="true" class="icon-star icon-star-full2" :class="getClass(star, hover, 1)" 
+            @mouseover="hover = 1" @mouseleave="hover = 0" @click="$emit('change', 1)"></i>
+        <i arian-hidden="true" class="icon-star icon-star-full2" :class="getClass(star, hover, 2)" 
+            @mouseover="hover = 2" @mouseleave="hover = 0" @click="$emit('change', 2)"></i>
+        <i arian-hidden="true" class="icon-star icon-star-full2" :class="getClass(star, hover, 3)" 
+            @mouseover="hover = 3" @mouseleave="hover = 0" @click="$emit('change', 3)"></i>
+        <i arian-hidden="true" class="icon-star icon-star-full2" :class="getClass(star, hover, 4)" 
+            @mouseover="hover = 4" @mouseleave="hover = 0" @click="$emit('change', 4)"></i>
+        <i arian-hidden="true" class="icon-star icon-star-full2" :class="getClass(star, hover, 5)" 
+            @mouseover="hover = 5" @mouseleave="hover = 0" @click="$emit('change', 5)"></i>
+    </div>`,
+    data: function() {
+        return {
+            hover: 0
+        }
+    },
+    methods: {
+        getClass: function(star, hover, value) {
+            if(hover < value && star >= value) {
+                return 'active'
+            } else if(hover >= value && star >= value) {
+                return 'active hover'
+            } else if(hover >= value) {
+                return 'hover'
+            }
+
+            return ''
         }
     }
 })
