@@ -35,7 +35,7 @@ class PlanController extends Controller
     public function actionEdit($slug) {
         $userid = Yii::$app->user->id;
         $model = PlanService::GetPlanBySlug($slug);
-        if ($model && $model->created_by == $userid) {
+        if ($model && $model['created_by'] == $userid) {
             $model = ArrayHelper::toArray($model);
             $model['detail'] = json_decode($model['detail'], true);
             $model['routes'] = json_decode($model['routes'], true);
