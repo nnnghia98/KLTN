@@ -382,7 +382,7 @@ Vue.component('place-in-row', {
             <div class="p-2 mt-1">
                 <div class="d-flex align-items-start flex-nowrap">
                     <div class="w-100">
-                        <a :href="root + 'app/plan/detail/' + place.slug">
+                        <a :href="root + 'app/place/detail/' + place.slug">
                             <h4 class="font-weight-semibold ellipsis-1">{{ place.name }}</h4>
                         </a>
                         <p class="text-muted ellipsis-2"><i class="icon-location4 mr-1"></i>{{ place.address }}</p>
