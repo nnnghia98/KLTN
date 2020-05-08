@@ -84,27 +84,7 @@ include('site_ext.php')
                 </div>
                 <div class="section-content mt-4">
                     <div class="row">
-                        <div class="col-md-3" v-for="p in plans" v-cloak>
-                            <div class="card overflow-hidden">
-                                <div class="card-img-actions overflow-hidden">
-                                    <img class="card-img img-fluid w-100 h-auto" :src="'<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.thumbnail" :alt="'travel sharing ' + p.name">
-                                </div>
-                                <div class="p-2 mt-1">
-                                    <div class="d-flex align-items-start flex-nowrap">
-                                        <div>
-                                            <a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + p.slug">
-                                                <h4 class="font-weight-semibold">{{ p.name }}</h4>
-                                            </a>
-                                            <div>
-                                                <img :src="p.author_avatar ? '<?= Yii::$app->homeUrl . 'uploads/' ?>' + p.author_avatar : '<?= Yii::$app->homeUrl . 'resources/images/no_avatar.jpg' ?>'"
-                                                    class="mr-1 rounded-circle" width="35" height="35">
-                                                <a :href="'<?= APPConfig::getUrl('user/') ?>' + p.author_slug">{{ p.author }}</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <plan-in-row v-for="plan in plans" :plan="plan" :col="3" :key="plan.id"></plan-in-row>
                     </div>
                 </div>
             </div>

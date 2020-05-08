@@ -1,11 +1,17 @@
 <?php
 
 use app\modules\app\APPConfig;
+use app\modules\app\PathConfig;
 use app\modules\cms\CMSConfig;
 use app\modules\contrib\gxassets\GxLaddaAsset;
 
 GxLaddaAsset::register($this);
-?>
+$pageData = [
+    'pageTitle' => $profile['fullname'],
+    'pageBreadcrumb' => [['Trang cá nhân']],
+    'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/plan-header.jpg'
+]; ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
 <style>
     .btn-upload-avatar,
@@ -55,8 +61,6 @@ GxLaddaAsset::register($this);
                 <ul class="nav nav-tabs nav-tabs-bottom nav-justified">
                     <li class="nav-item"><a href="#information" class="nav-link border-0 active" data-toggle="tab">Thông tin</a></li>
                     <li class="nav-item"><a href="#setting" class="nav-link border-0" data-toggle="tab">Cài đặt</a></li>
-                    <li class="nav-item"><a href="#following" class="nav-link border-0" data-toggle="tab">Đang theo dõi <span v-if="following">({{ following.length }})</span></a></li>
-                    <li class="nav-item"><a href="#follower" class="nav-link border-0" data-toggle="tab">Theo dõi tôi <span v-if="follower">({{ follower.length }})</span></a></li>
                 </ul>
             </div>
         </div>
@@ -112,7 +116,9 @@ GxLaddaAsset::register($this);
                         </div>
                         <div class="row form-group">
                             <div class="col-12 text-right">
-                                <button class="btn btn-sm btn-primary text-uppercase btn-save-user-information" @click="saveUserInformation">Lưu thông tin</button>
+                                <button class="btn bg-pink-400 rounded-round btn-save-user-information" @click="saveUserInformation">
+                                    Lưu thông tin
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -140,7 +146,7 @@ GxLaddaAsset::register($this);
                         </div>
                         <div class="row form-group">
                             <div class="col-12 text-right">
-                                <button class="btn btn-sm btn-primary text-uppercase btn-change-password" @click="changePassword">Đổi mật khẩu</button>
+                                <button class="btn bg-pink-400 rounded-round btn-change-password" @click="changePassword">Đổi mật khẩu</button>
                             </div>
                         </div>
                     </form>
@@ -148,53 +154,7 @@ GxLaddaAsset::register($this);
                     <div class="row form-group">
                         <div class="col-3 col-form-label">Đăng xuất tài khoản</div>
                         <div class="col-9 text-right">
-                            <a href="<?= Yii::$app->homeUrl . 'site/logout' ?>" class="btn btn-sm btn-primary">Đăng xuất <i class="icon-switch ml-2"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade w-100" id="following">
-                    <div class="loading-data d-flex justify-content-center align-items-center" v-if="following == null">
-                        <i class="icon-spinner spinner2"></i>
-                    </div>
-                    <div class="loaded-data" v-else>
-                        <div class="empty-data" v-if="following.length == 0"></div>
-                        <div class="available-data" v-else>
-                            <div class="row">
-                                <div class="col-md-3" v-for="user in following">
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <div class="card-img-actions d-inline-block mb-3">
-                                                <img class="img-fluid rounded-circle" :src="getAvatarPath(user.avatar)" width="170" height="170" alt="">
-                                            </div>
-                                            <a :href="'<?= APPConfig::getUrl('user/pointclound?slug=') ?>' + user.slug"><h6 class="font-weight-semibold mb-0">{{ user.fullname }}</h6></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade w-100" id="follower">
-                    <div class="loading-data d-flex justify-content-center align-items-center" v-if="follower == null">
-                        <i class="icon-spinner spinner2"></i>
-                    </div>
-                    <div class="loaded-data" v-else>
-                        <div class="empty-data" v-if="follower.length == 0"></div>
-                        <div class="available-data" v-else>
-                            <div class="row">
-                                <div class="col-md-3" v-for="user in follower">
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <div class="card-img-actions d-inline-block mb-3">
-                                                <img class="img-fluid rounded-circle" :src="getAvatarPath(user.avatar)" width="170" height="170" alt="">
-                                            </div>
-                                            <a :href="'<?= APPConfig::getUrl('user/pointclound?slug=') ?>' + user.slug"><h6 class="font-weight-semibold mb-0">{{ user.fullname }}</h6></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <a href="<?= Yii::$app->homeUrl . 'site/logout' ?>" class="btn bg-pink-400 rounded-round">Đăng xuất <i class="icon-switch ml-2"></i></a>
                         </div>
                     </div>
                 </div>
@@ -211,16 +171,7 @@ GxLaddaAsset::register($this);
         data: {
             profile: profile,
             avatar: profile.avatar,
-            uploadedAvatar: false,
-            following: null,
-            follower: null
-        },
-        created: function() {
-            var _this = this;
-            _this.$nextTick(function() {
-                _this.getFollowing()
-                _this.getFollower()
-            })
+            uploadedAvatar: false
         },
         methods: {
             readFileInfo: function(event) {
@@ -282,7 +233,7 @@ GxLaddaAsset::register($this);
                         auth_user_id: this.profile.auth_user_id,
                         avatar: this.avatar
                     }
-                this.sendAjax(api, data, function(resp) {
+                sendAjax(api, data, function(resp) {
                     if (resp.status) {
                         _this.uploadedAvatar = false
                         toastMessage('success', resp.message)
@@ -301,7 +252,7 @@ GxLaddaAsset::register($this);
                     data = form.serialize()
                 
                 ladda.start()
-                this.sendAjax(api, data, function(resp) {
+                sendAjax(api, data, function(resp) {
                     if (resp.status) {
                         toastMessage('success', resp.message)
                     } else {
@@ -320,49 +271,13 @@ GxLaddaAsset::register($this);
                     data = form.serialize()
                 
                 ladda.start()
-                this.sendAjax(api, data, function(resp) {
+                sendAjax(api, data, function(resp) {
                     if (resp.status) {
                         toastMessage('success', resp.message)
                     } else {
                         toastMessage('error', resp.message)
                     }
                     ladda.stop()
-                })
-            },
-
-            getFollowing: function() {
-                var _this = this,
-                    api = '<?= APPConfig::getUrl('user/get-following') ?>'
-                
-                _this.sendAjax(api, {}, function(resp) {
-                    if(resp.status) {
-                        _this.following = resp.following
-                    }
-                })
-            },
-
-            getFollower: function() {
-                var _this = this,
-                    api = '<?= APPConfig::getUrl('user/get-follower') ?>'
-                
-                _this.sendAjax(api, {}, function(resp) {
-                    if(resp.status) {
-                        _this.follower = resp.follower
-                    }
-                })
-            },
-
-            sendAjax(api, data, callback) {
-                $.ajax({
-                    url: api,
-                    type: 'POST',
-                    data: data,
-                    success: function(resp) {
-                        callback(resp)
-                    },
-                    error: (msg) => {
-                        toastMessage('error', 'Lỗi!')
-                    }
                 })
             },
 

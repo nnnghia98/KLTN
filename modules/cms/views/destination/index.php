@@ -19,24 +19,23 @@ $pageData = [
             </div>
         </div>
         <div class="card-body" v-cloak>
-            <div class="loading-destinations text-center my-3" v-if="!loading" >
+            <div class="loading-destinations text-center my-3" v-if="loading">
                 <span><i class="icon-spinner2 spinner icon-2x mr-2"></i> Đang tải danh sách điểm đến</span>
             </div>
             <div class="destinations-available" v-else>
-                <table class="tables tables-striped">
+                <table class="table table-stripped">
                     <tr>
                         <th>#</th>
                         <th>Điểm đến</th>
                         <th>Mô tả</th>
-                        <th>tên<th>
                         <th>Thao tác</th>
                     </tr>
                     <tr v-for="(destination, index) in destinations">
                         <td>{{ index + 1 }}</td>
                         <td>{{ destination.name }}</td>
                         <td>{{ destination.subtitle }}</td>
-                        <td>{{ destination.slug }}</td>
                         <td>
+                            <a :href="'<?= CMSConfig::getUrl('destination/edit?slug=') ?>' + destination.slug" class="btn btn-icon btn-sm btn-outline-primary mr-2"><i class="icon-pencil"></i></a>
                             <button class="btn btn-icon btn-sm btn-outline-danger" @click="confirmDelete(destination.destination_id)"><i class="icon-trash"></i></button>
                         </td>
                     </tr>
@@ -73,6 +72,7 @@ $pageData = [
             el: '#destination-manage-pageadmin',
             data: {
                 destinations: null,
+                paginations: null,
                 selectdestination: null,
                 loading: false,
                 roles: JSON.parse('<?= json_encode($roles, true) ?>'),
@@ -89,13 +89,13 @@ $pageData = [
                 getDestinations: function() {
                     var _this = this;
                     var api = '<?= CMSConfig::getUrl('destination/get-list?page=') ?>' + _this.page;
-                    _this.loading = false;
+                    _this.loading = true;
                     
                     _this.sendAjax(api, {}, function(resp) {
                         if (resp.status) {
                             _this.destinations = resp.destinations;
                             _this.paginations = resp.paginations;
-                            _this.getDestinations = true;
+                            _this.loading = false;
                         } else {
                             toastMessage('error', resp.message);
                         }

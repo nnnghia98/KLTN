@@ -42,33 +42,11 @@ class PlaceController extends Controller
     }
  
     /**-------------API-----------------*/
-    public function actionGetFoodList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $comment = 1, $rating = 0) {
-        list($foods, $pagination) = PlaceService::GetFoodListAppPage($page, $perpage, $keyword, $comment, $rating, $destination);
+    public function actionGetPlaceList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $order = 'rating-desc', $type = 1) {
+        list($places, $pagination) = PlaceService::GetPlaceListAppPage($page, $perpage, $keyword, $destination, $order, $type);
         $response = [
             'status' => true,
-            'foods' => $foods,
-            'pagination' => $pagination
-        ];
-
-        return $this->asJson($response);
-    }
-
-    public function actionGetVisitList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $comment = 1, $rating = 0) {
-        list($visits, $pagination) = PlaceService::GetVisitListAppPage($page, $perpage, $keyword, $comment, $rating, $destination);
-        $response = [
-            'status' => true,
-            'visits' => $visits,
-            'pagination' => $pagination
-        ];
-
-        return $this->asJson($response);
-    }
-
-    public function actionGetRestList($page = 1, $perpage = 9, $keyword = '', $destination = 13, $comment = 1, $rating = 0) {
-        list($rests, $pagination) = PlaceService::GetRestListAppPage($page, $perpage, $keyword, $comment, $rating, $destination);
-        $response = [
-            'status' => true,
-            'rests' => $rests,
+            'places' => $places,
             'pagination' => $pagination
         ];
 

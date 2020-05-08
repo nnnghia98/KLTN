@@ -49,7 +49,7 @@ class CustomRule extends BaseObject implements UrlRuleInterface
     {
         $pathInfo = $request->getPathInfo();
         $params = $request->getQueryParams();
-        if (preg_match('/^(app\/plan\/edit)|(app\/plan\/detail)|(app\/plan\/duplicate)|(app\/place\/detail)|(app\/destination\/detail)/', $pathInfo)) {
+        if (preg_match('/^(app\/plan\/edit)|(app\/plan\/detail)|(app\/plan\/duplicate)|(app\/place\/detail)|(app\/destination\/detail)|(app\/user\/plan)/', $pathInfo)) {
             $pathItems = explode('/', $pathInfo);
             $params['slug'] = end($pathItems);
             array_pop($pathItems);

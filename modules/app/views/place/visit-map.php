@@ -1,5 +1,6 @@
 <?php
 use app\modules\app\APPConfig;
+use app\modules\cms\services\PlaceService;
 use app\modules\contrib\gxassets\GxVueSelectAsset;
 use app\modules\contrib\gxassets\GxLeafletAsset;
 
@@ -84,8 +85,6 @@ GxVueSelectAsset::register($this);
                 page: 1,
                 perpage: 20,
                 keyword: '',
-                comment: 1,
-                rating: 0,
                 destination: 13,
                 destinationCategories: []
             },
@@ -109,12 +108,12 @@ GxVueSelectAsset::register($this);
             methods: {
                 getVisits: function() {
                     var _this = this
-                    var api = '<?= APPConfig::getUrl('place/get-visit-list') ?>' +
-                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
+                    var api = '<?= APPConfig::getUrl('place/get-place-list') ?>' +
+                        `?page=${this.page}&perpage=${this.perpage}&destination=${this.destination}&keyword=${this.keyword}&type=` + '<?= PlaceService::$TYPE['VISIT'] ?>'
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
-                            _this.visits = resp.visits
+                            _this.visits = resp.places
                             _this.pagination = resp.pagination
                             initLayer(_this.visits)
                             _this.loading = false

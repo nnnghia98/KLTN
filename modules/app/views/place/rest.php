@@ -2,6 +2,7 @@
 
 use app\modules\app\APPConfig;
 use app\modules\app\PathConfig;
+use app\modules\cms\services\PlaceService;
 use app\modules\contrib\gxassets\GxVueSelectAsset;
 
 GxVueSelectAsset::register($this);
@@ -27,7 +28,7 @@ $pageData = [
                             <div class="input-group">
                                 <input type="text" class="form-control border-right-0" placeholder="Tên địa điểm nghỉ ngơi" v-model="keyword">
                                 <span class="input-group-append" @click="getRests()">
-                                    <span class="input-group-text bg-indigo-400 border-indigo-400 text-white">
+                                    <span class="input-group-text bg-pink-400 border-pink-400 text-white">
                                         <i class="icon-search4"></i>
                                     </span>
                                 </span>
@@ -40,20 +41,9 @@ $pageData = [
                         </div>
                         <hr>
                         <div class="form-group">
-                            <label for="" class="font-weight-bold">Đánh giá</label>
-                            <select class="form-control" v-model="rating" @change="getRests()">
-                                <option value="5">5 sao</option>
-                                <option value="4">Trên 4 sao</option>
-                                <option value="3">Trên 3 sao</option>
-                                <option value="0">Tất cả</option>
-                            </select>
-                        </div>
-                        <hr>
-                        <div class="form-group">
-                            <label for="" class="font-weight-bold">Bình luận</label>
-                            <select class="form-control" v-model="comment" @change="getRests()">
-                                <option value="1">Giảm dần</option>
-                                <option value="0">Tăng dần</option>
+                            <label for="" class="font-weight-bold">Sắp xếp</label>
+                            <select class="form-control" v-model="order" @change="getRests()">
+                                <option v-for="(value, key) in orderMap" :value="key">{{ value }}</option>
                             </select>
                         </div>
                     </div>
@@ -62,7 +52,7 @@ $pageData = [
 
             <div class="card">
                 <div class="card-body d-flex justify-content-center">
-                    <a href="<?= APPConfig::getUrl('place/rest-map') ?>" class="btn btn-outline bg-pink-400 border-pink-400 text-pink-400 rounded-round">
+                    <a href="<?= APPConfig::getUrl('place/rest-map') ?>" class="btn bg-pink-400 rounded-round">
                         Xem trên bản đồ <i class="icon-map4 ml-2"></i>
                     </a>
                 </div>
@@ -113,8 +103,11 @@ $pageData = [
                 loading: true,
                 page: 1,
                 perpage: 5,
-                comment: 1,
-                rating: 0,
+                order: 'rating-desc',
+                orderMap: {
+                    'rating-desc': 'Đánh giá giảm dần',
+                    'rating-asc': 'Đánh giá tăng dần',
+                },
                 keyword: '',
                 destination: 13,
                 destinationCategories: []
@@ -135,12 +128,12 @@ $pageData = [
             methods: {
                 getRests: function() {
                     var _this = this
-                    var api = '<?= APPConfig::getUrl('place/get-rest-list') ?>' +
-                        '?page=' + this.page + '&perpage=' + this.perpage + '&destination=' + this.destination + '&keyword=' + this.keyword + '&comment=' + this.comment + '&rating=' + this.rating
+                    var api = '<?= APPConfig::getUrl('place/get-place-list') ?>' +
+                        `?page=${this.page}&perpage=${this.perpage}&destination=${this.destination}&keyword=${this.keyword}&order=${this.order}&type=` + '<?= PlaceService::$TYPE['REST'] ?>'
 
                     sendAjax(api, {}, 'GET', (resp) => {
                         if (resp.status) {
-                            _this.rests = resp.rests
+                            _this.rests = resp.places
                             _this.pagination = resp.pagination
                             _this.loading = false
                         } else {

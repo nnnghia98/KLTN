@@ -22,6 +22,10 @@ $pageData = [
     .v-application--wrap {
         min-height: unset;
     }
+
+    body {
+        background: white;
+    }
 </style>
 <div class="container mt-3" id="create-plan-page">
     <v-app>

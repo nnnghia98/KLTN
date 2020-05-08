@@ -131,7 +131,9 @@ use app\modules\cms\services\AuthService;
                             <h6 class="mb-0 font-weight-bold"><?= AuthService::UserFullName() ?></h6>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" style="z-index: 102">
-                            <a href="<?= APPConfig::getUrl('user/my-profile') ?>" class="dropdown-item"><i class="icon-user-plus"></i> Trang cá nhân</a>
+                            <a href="<?= APPConfig::getUrl('user/my-profile') ?>" class="dropdown-item"><i class="icon-user"></i> Trang cá nhân</a>
+                            <div class="dropdown-divider my-0"></div>
+                            <a href="<?= APPConfig::getUrl('user/my-plan') ?>" class="dropdown-item"><i class="icon-paperplane"></i> Lịch trình của tôi</a>
                             <div class="dropdown-divider my-0"></div>
                             <a href="<?= Yii::$app->homeUrl ?>site/logout" class="dropdown-item"><i class="icon-switch2"></i> Đăng xuất</a>
                         </div>

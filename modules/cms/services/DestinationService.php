@@ -24,6 +24,17 @@ class DestinationService
         'ERROR_LIST' => 'Không thể lấy danh sách điểm đến'
     ];
 
+    public static $ORDERMAP = [
+        'rating-desc' => [
+            'column' => 'avg_rating',
+            'sort' => 'DESC'
+        ],
+        'rating-asc' => [
+            'column' => 'avg_rating',
+            'sort' => 'ASC'
+        ]
+    ];
+
     public static $OBJECT_TYPE = 'app\modules\cms\models\Destination';
 
     public static function GetTopDestinations($limit) {
@@ -39,7 +50,8 @@ class DestinationService
         return $destinations;
     }
 
-    public static function GetListAppPage($page, $perpage, $keyword, $comment, $rating) {
+    public static function GetListAppPage($page, $perpage, $keyword, $order) {
+        $order = self::$ORDERMAP[$order];
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $query = (new Query())
                         ->select(['d.*', 'i.*'])
@@ -47,16 +59,13 @@ class DestinationService
                         ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
                         ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
                         ->andWhere(['like', 'LOWER(name)', strtolower($keyword)]);
-        if($rating) {
-            $query->andWhere(['>=', 'i.avg_rating', $rating]);
-        }
 
         $total = $query->select('COUNT(*)')->column();
         
         list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
                         
         $destinations = $query->select(['d.*', 'i.*'])
-                        ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
+                        ->orderBy($order['column'] . ' ' . $order['sort'])
                         ->limit($limit)
                         ->offset($offset)
                         ->all();
@@ -96,6 +105,7 @@ class DestinationService
                         ->select(['d.*', 'i.*'])
                         ->from(['d' => 'destination'])
                         ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
                         ->andWhere(['slug' => $slug])
                         ->one();
 

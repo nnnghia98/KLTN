@@ -87,7 +87,7 @@ $pageData = [
                                         </div>
                                         <div class="media-body">
                                             <h5 class="media-title font-weight-bold"><a :href="'<?= APPConfig::getUrl('plan/detail/') ?>' + item.slug">{{ item.name }}</a></h5>
-                                            {{ item.subtitle }}
+                                            <rating-star-static :rating="item.avg_rating" :key="item.slug"></rating-star-static>
                                             <p class="text-muted"><i class="icon-comment mr-1"></i> {{ item.count_comment ? item.count_comment : 0 }}</p>
                                         </div>
                                     </div>

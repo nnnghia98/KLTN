@@ -27,8 +27,8 @@ class DestinationController extends Controller
     }
 
     /**-------------API-----------------*/
-    public function actionGetList($page = 1, $perpage = 9, $keyword = '', $comment = 1, $rating = 0) {
-        list($destinations, $pagination) = DestinationService::GetListAppPage($page, $perpage, $keyword, $comment, $rating);
+    public function actionGetList($page = 1, $perpage = 9, $keyword = '', $order = 'rating-desc') {
+        list($destinations, $pagination) = DestinationService::GetListAppPage($page, $perpage, $keyword, $order);
         $response = [
             'status' => true,
             'destinations' => $destinations,

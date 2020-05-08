@@ -28,6 +28,19 @@ class DestinationController extends Controller
         return $this->render('create');
     }
 
+    public function actionEdit($slug = null) {
+        $model = Destination::findOne(['slug' => $slug]);
+        $request = Yii::$app->request;
+        if($request->isPost) {
+            $model->load($request->post());
+            if($model->save()) {
+                Yii::$app->session->setFlash('success', 'Chỉnh sửa thông tin điểm đến thành công');
+                return $this->redirect(CMSConfig::getUrl('destination'));
+            }
+        }
+        return $this->render('edit', compact('model'));
+    }
+
  
     /**-------------API-----------------*/
     public function actionGetList($page = 1, $perpage = 20) {
@@ -45,7 +58,7 @@ class DestinationController extends Controller
             $paginations = SiteService::CreatePaginationMetadata($total, $page, $perpage, $count);
             $response = [
                 'status' => true,
-                'destinations ' => $destinations,
+                'destinations' => $destinations,
                 'paginations' => $paginations
             ];
         } else {
@@ -82,7 +95,4 @@ class DestinationController extends Controller
         }
         throw new NotFoundHttpException();
     }
-
-    
-   
 }

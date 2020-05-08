@@ -2,8 +2,8 @@ Vue.component('rating-star-static', {
     props: ['rating'],
     data: function() {
         return {
-            ratingFixed: parseFloat(this.rating).toFixed(1),
-            percent: parseFloat(this.rating) / 5 * 100
+            ratingFixed: this.rating ? parseFloat(this.rating).toFixed(1) : 0,
+            percent: this.rating ? parseFloat(this.rating) / 5 * 100 : 0
         }
     },
     template: `
@@ -416,7 +416,47 @@ Vue.component('plan-in-row', {
                         <div>
                             <img :src="plan.author_avatar ? root + 'uploads/' + plan.author_avatar : root + 'resources/images/no_avatar.jpg'"
                                 class="mr-1 rounded-circle" width="35" height="35">
-                            <a :href="root + 'app/user/' + plan.author_slug">{{ plan.author }}</a>
+                            <a :href="root + 'app/user/plan/' + plan.author_slug">{{ plan.author }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`
+})
+
+Vue.component('my-plan', {
+    props: ['plan', 'col'],
+    data: function() {
+        return {
+            root: APP.root
+        }
+    },
+    template: `
+    <div class="plan-item-in-row" :class="'col-md-' + col" v-cloak>
+        <div class="card overflow-hidden">
+            <div class="card-img-actions overflow-hidden">
+                <img class="card-img img-fluid w-100 h-auto" :src="root + 'uploads/' + plan.thumbnail" :alt="'travel sharing ' + plan.name">
+                <div class="card-img-actions-overlay card-img">
+                    <a :href="root + 'app/plan/edit/' + plan.slug" class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round" data-popup="lightbox" rel="group">
+                        <i class="icon-pencil"></i>
+                    </a>
+
+                    <button class="btn btn-outline bg-white text-white border-white border-2 btn-icon rounded-round ml-2" @click="$emit('confirm-delete', plan.slug)">
+                        <i class="icon-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-2 mt-1">
+                <div class="d-flex align-items-start flex-nowrap">
+                    <div>
+                        <a :href="root + 'app/plan/detail/' + plan.slug">
+                            <h4 class="font-weight-semibold">{{ plan.name }}</h4>
+                        </a>
+                        <div>
+                            <img :src="plan.author_avatar ? root + 'uploads/' + plan.author_avatar : root + 'resources/images/no_avatar.jpg'"
+                                class="mr-1 rounded-circle" width="35" height="35">
+                            <a :href="root + 'app/user/plan/' + plan.author_slug">{{ plan.author }}</a>
                         </div>
                     </div>
                 </div>
@@ -486,4 +526,27 @@ Vue.component('rating', {
             return ''
         }
     }
+})
+
+Vue.component('delete-modal', {
+    props: ['deletewarning'],
+    template: `<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="deleteModalLabel">Travel Sharing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5 class="warning-text">{{ deletewarning }}</h5>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" @click="$emit('delete')">Xóa</button>
+            </div>
+            </div>
+        </div>
+    </div>`
 })

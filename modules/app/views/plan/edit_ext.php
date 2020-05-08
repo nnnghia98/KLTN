@@ -67,6 +67,25 @@ use app\modules\app\APPConfig;
     .btn-zoom-to-place { transition: .3s all ease; }
 
     .btn-zoom-to-place:hover { text-shadow: 2px 2px 5px #ccc; color: var(--main-color-pink) }
+
+    .place-on-map img { width: 100%; height: 100%; }
+
+    .order-number {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background: var(--main-color-indigo);
+        color: #fff;
+        border-radius: 50%;
+        transform: translate(-50%, -70%);
+        font-size: 1rem;
+        font-weight: bold;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
 <script>
     var DATA = {
@@ -147,7 +166,7 @@ use app\modules\app\APPConfig;
 
         var markers = [], icon, marker, bounds
         places.forEach((item, index) => {
-            icon = customIcon()
+            icon = customIcon(index + 1)
             marker = L.marker([item.lat, item.lng], {icon: icon}).bindPopup(markerPopup(item))
             marker._leaflet_id = item.id
             DATA.layers.overlay['place'].addLayer(marker)
@@ -178,9 +197,11 @@ use app\modules\app\APPConfig;
         }
     }
 
-    function customIcon() {
-        return L.icon({
-            iconUrl: '<?= Yii::$app->homeUrl . 'resources/images/marker-plan.png' ?>',
+    function customIcon(order) {
+        var placeIcon = `<img src="${'<?= Yii::$app->homeUrl . 'resources/images/marker-plan.png' ?>'}"><span class="order-number">${order}</span>`;
+        return L.divIcon({
+            html: placeIcon,
+            className: 'place-on-map position-relative',
             iconSize: [40, 40],
             iconAnchor: [20, 40],
             popupAnchor: [0, -30]

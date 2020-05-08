@@ -29,6 +29,17 @@ class PlaceService
         'ERROR_LIST' => 'Không thể lấy danh sách địa điểm '
     ];
 
+    public static $ORDERMAP = [
+        'rating-desc' => [
+            'column' => 'avg_rating',
+            'sort' => 'DESC'
+        ],
+        'rating-asc' => [
+            'column' => 'avg_rating',
+            'sort' => 'ASC'
+        ]
+    ];
+
     public static $OBJECT_TYPE = 'app\modules\cms\models\Place';
 
     public static function GetTopPlaces($limit) {
@@ -44,87 +55,31 @@ class PlaceService
         return $places;
     }
 
-    public static function GetFoodListAppPage($page, $perpage, $keyword, $comment, $rating, $destination) {
+    public static function GetPlaceListAppPage($page, $perpage, $keyword, $destination, $order, $type) {
+        $order = self::$ORDERMAP[$order];
         $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
         $query = (new Query())
                         ->select(['p.*', 'i.*'])
                         ->from(['p' => 'place'])
                         ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
                         ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
-                        ->andWhere(['place_type_id' => self::$TYPE['FOOD']])
+                        ->andWhere(['place_type_id' => $type])
                         ->andWhere(['like', 'LOWER(name)', strtolower($keyword)]);
         if($destination) {
             $query->andWhere(['destination_id' => $destination]);
         }
-        if($rating) {
-            $query->andWhere(['>', 'i.avg_rating', $rating]);
-        }
+
         $total = $query->select('COUNT(*)')->column();
         
         list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
                         
-        $foods = $query->select(['p.*', 'i.*'])
-                        ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
+        $places = $query->select(['p.*', 'i.*'])
+                        ->orderBy($order['column'] . ' ' . $order['sort'])
                         ->limit($limit)
                         ->offset($offset)
                         ->all();
-        $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($foods));
-        return [$foods, $pagination];
-    }
-
-    public static function GetVisitListAppPage($page, $perpage, $keyword, $comment, $rating, $destination) {
-        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
-        $query = (new Query())
-                        ->select(['p.*', 'i.*'])
-                        ->from(['p' => 'place'])
-                        ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
-                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
-                        ->andWhere(['place_type_id' => self::$TYPE['VISIT']])
-                        ->andWhere(['like', 'LOWER(name)', strtolower($keyword)]);
-        if($destination) {
-            $query->andWhere(['destination_id' => $destination]);
-        }
-        if($rating) {
-            $query->andWhere(['>', 'i.avg_rating', $rating]);
-        }
-        $total = $query->select('COUNT(*)')->column();
-        
-        list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
-             
-        $visits = $query->select(['p.*', 'i.*'])
-                        ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
-                        ->limit($limit)
-                        ->offset($offset)
-                        ->all();
-        $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($visits));
-        return [$visits, $pagination];
-    }
-    public static function GetRestListAppPage($page, $perpage, $keyword, $comment, $rating, $destination) {
-        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
-        $query = (new Query())
-                        ->select(['p.*', 'i.*'])
-                        ->from(['p' => 'place'])
-                        ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
-                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
-                        ->andWhere(['place_type_id' => self::$TYPE['REST']])
-                        ->andWhere(['like', 'LOWER(name)', strtolower($keyword)]);
-        if($destination) {
-            $query->andWhere(['destination_id' => $destination]);
-        }
-        if($rating) {
-            $query->andWhere(['>', 'i.avg_rating', $rating]);
-        }
-        $total = $query->select('COUNT(*)')->column();
-        
-        list($limit, $offset) = SiteService::GetLimitAndOffset($page, $perpage);
-        
-        $rests = $query->select(['p.*', 'i.*'])
-                        ->orderBy(['i.count_comment' => $comment ? SORT_DESC : SORT_ASC])
-                        ->limit($limit)
-                        ->offset($offset)
-                        ->all();
-        $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($rests));
-        return [$rests, $pagination];
+        $pagination = SiteService::CreatePaginationMetadata($total[0], $page, $perpage, count($places));
+        return [$places, $pagination];
     }
 
     public static function GetPlacesAppPage($page, $perpage, $keyword, $destination, $type, $sort, $lat, $lng) {
@@ -184,6 +139,7 @@ class PlaceService
                         ->select(['d.*', 'i.*'])
                         ->from(['d' => 'place'])
                         ->leftJoin(['i' => $interactive], 'd.id = i.object_id')
+                        ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
                         ->andWhere(['slug' => $slug])
                         ->one();
 

@@ -24,7 +24,9 @@ class PlanService
     public static $RESPONSE = [
         'ERROR_LIST' => 'Không thể lấy danh sách lịch trình',
         'CREATE_ERROR' => 'Không thể tạo lịch trình',
-        'EDIT_ERROR' => 'Không thể lưu lịch trình chi tiết'
+        'EDIT_ERROR' => 'Không thể lưu lịch trình chi tiết',
+        'DELETE_SUCCESS' => 'Xóa lịch trình thành công',
+        'ACTION_ERROR' => 'Thao tác không thành công'
     ];
 
     public static $HERE_API_ID = 'gRqLa6YYLXTqvoTTUhiT';
@@ -73,7 +75,11 @@ class PlanService
     }
 
     public static function GetPlanBySlug($slug) {
-        $plan = Plan::find()
+        $interactive = InteractiveService::GetQueryInteractive(self::$OBJECT_TYPE);
+        $plan = (new Query())
+                    ->select(['p.*', 'i.*'])
+                    ->from(['p' => 'plan'])
+                    ->leftJoin(['i' => $interactive], 'p.id = i.object_id')
                     ->where(['and', ['status' => self::$STATUS['ACTIVE']], ['delete' => self::$DELETE['ALIVE']]])
                     ->andWhere(['slug' => $slug])
                     ->one();
@@ -100,6 +106,20 @@ class PlanService
         
         if($model->save()) {
             return $model->slug;
+        }
+        return false;
+    }
+
+    public static function Delete($data)
+    {
+        $userid = Yii::$app->user->id;
+        $slug = $data['slug'];
+        $plan = Plan::findOne(['slug' => $slug]);
+        if ($plan && (AuthService::IsAdmin() || $plan->created_by == $userid)) {
+            $plan->delete = self::$DELETE['DELETED'];
+            if ($plan->save()) {
+                return true;
+            }
         }
         return false;
     }
@@ -187,5 +207,57 @@ class PlanService
 
     public static function DeleteAllplanDetail($planid) {
         PlanDetail::deleteAll(['plan_id' => $planid]);
+    }
+
+    public static function GetPlansByUserId($userid) {
+        $plans = (new Query())
+                        ->select(['p.name', 'p.thumbnail', 'p.slug', 'u.avatar as author_avatar', 'u.slug as author_slug', 'u.fullname as author'])
+                        ->from(['p' => 'plan'])
+                        ->leftJoin(['u' => 'auth_user'], 'p.created_by = u.id')
+                        ->where(['and', ['p.status' => self::$STATUS['ACTIVE']], ['p.delete' => self::$DELETE['ALIVE']]])
+                        ->andWhere(['created_by' => $userid])
+                        ->orderBy('p.created_at DESC')
+                        ->limit(3)
+                        ->all();
+        return $plans;
+    }
+
+    public static function GetComments($id, $page, $perpage) {
+        list($limit, $offset) =  SiteService::GetLimitAndOffset($page, $perpage);
+        $comments = (new Query())
+                        ->select(['i.comment', 'i.rating', 'i.created_at', 'u.avatar as author_avatar', 'u.slug as author_slug', 'u.fullname as author'])
+                        ->from('interactive as i')
+                        ->leftJoin(['u' => 'auth_user'], 'i.created_by = u.id')
+                        ->where(['and', ['i.object_type' => self::$OBJECT_TYPE], ['i.object_id' => $id]])
+                        ->orderBy('i.created_at DESC')
+                        ->limit($limit)
+                        ->offset($offset)
+                        ->all();
+        return $comments;
+    }
+
+    public static function GetInteractiveOfCurrentUser($id) {
+        if(!Yii::$app->user->isGuest) {
+            $userid = Yii::$app->user->id;
+            $interactive = (new Query())
+                        ->select(['comment', 'rating', 'is_like'])
+                        ->from('interactive')
+                        ->where(['and', ['object_type' => self::$OBJECT_TYPE], ['object_id' => $id]])
+                        ->andWhere(['created_by' => $userid])
+                        ->one();
+            if($interactive) {
+                return [
+                    'star' => $interactive['rating'],
+                    'comment' => $interactive['comment'],
+                    'like' => $interactive['is_like']
+                ];
+            }
+        }
+        
+        return [
+            'star' => 0,
+            'comment' => 0,
+            'like' => 0
+        ];
     }
 }

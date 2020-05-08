@@ -82,7 +82,7 @@ $pageData = [
                     <h3 class="card-title" v-cloak>Giới thiệu về {{ destination.name }}</h3>
                 </div>
                 <div class="card-body">
-                    <div v-html="destination.description"></div>
+                    <div v-html="destination.description" style="white-space: pre-wrap;"></div>
                 </div>
             </div>
             <div class="places-plan-wrap mt-5" v-cloak>

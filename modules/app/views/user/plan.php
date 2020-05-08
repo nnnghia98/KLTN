@@ -1,72 +1,113 @@
 <?php
 
 use app\modules\app\APPConfig;
-use app\modules\cms\CMSConfig;
-use app\modules\contrib\gxassets\GxLaddaAsset;
-use app\modules\contrib\gxassets\GxVueComponentAsset;
+use app\modules\app\PathConfig;
+use app\modules\cms\services\PlaceService;
+use app\modules\cms\widgets\CMSMapDetailWidget;
+use app\modules\contrib\gxassets\GxLeafletAsset;
+use app\modules\contrib\gxassets\GxVueperSlidesAsset;
 
-GxVueComponentAsset::register($this);
-GxLaddaAsset::register($this);
+GxLeafletAsset::register($this);
+GxVueperSlidesAsset::register($this);
+
+$pageData = [
+    'pageTitle' => $user['fullname'],
+    'pageBreadcrumb' => [['Lịch trình của ' . $user['fullname']]],
+    'backgoundHeader' => Yii::$app->homeUrl . 'resources/images/destination-header.jpg'
+];
 ?>
+<?= $this->render(PathConfig::getAppViewPath('pageHeader'), $pageData); ?>
 
-<style>
-    .user-avatar {
-        width: 150px;
-        height: 150px;
-    }
-
-    .user-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-</style>
-
-<div class="content user-page" id="user-pointclound-page" v-cloak>
+<div class="content" id="my-plan-page" v-cloak>
     <div class="">
-        <div class="user-pointclound-page-header d-flex justify-content-center align-items-center flex-column card card-body pb-0 mb-0">
-            <div class="user-swapper py-4 d-flex align-items-center flex-column">
+        <div class="user-page-header d-flex justify-content-center align-items-center flex-column card card-body pb-0 mb-0">
+            <div class="user-swapper py-4 d-flex flex-column align-items-center">
                 <div class="user-avatar rounded-circle overflow-hidden position-relative border-2 border-primary">
-                    <img :src="getAvatarPath(user.avatar)" :alt="user.fullname" style="object-fit: cover">
+                    <img :src="getAvatarPath(avatar)" :alt="user.fullname" width="150" height="150" style="object-fit: cover">
                 </div>
                 <div class="user-name text-center mt-3 mb-0">
-                    <h3>{{ user.fullname }} ({{ points.length }} points)</h3>
+                    <h3>{{ user.fullname }}</h3>
                 </div>
-                <user-following :following="user.following" :userid="user.id" :fullname="user.fullname"></user-following>
             </div>
         </div>
-        <div class="user-pointclound-page-body py-5">
-            <div class="tab-content w-100 d-flex justify-content-center">
-                <div class="tab-pane fade w-100" id="pointclound">
-                    <div class="row">
-                        <div class="col-md-3" v-for="point in points">
-                            <div class="card">
-                                <div class="card-img-actions m-1">
-                                    <img class="card-img img-fluid" :src="point.thumbnail" alt="">
-                                </div>
-                            </div>
+        <div class="user-page-body my-5">
+            <div class="container">
+                <div class="loading-data d-flex justify-content-center p-3" style="height: 50vh" v-if="!plans">
+                    <div class="loading-content"><i class="icon-spinner2 spinner icon-2x"></i></div>
+                </div>
+                <div class="loaded-data" v-else>
+                    <div class="empty-data d-flex justify-content-center p-3" v-if="plans.length == 0">
+                        <h4 class="font-weight-bold mb-0">Không có lịch trình</h4>
+                    </div>
+                    <div class="available-data" v-else>
+                        <div class="row">
+                            <plan-in-row v-for="plan in plans" :plan="plan" :col="3" :key="plan.id"></plan-in-row>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <delete-modal 
+        :deletewarning="'Bạn có chắc chắn xóa lịch trình này?'" 
+        @delete="deletePlan"></delete-modal>
 </div>
 
 <script>
-    var user = JSON.parse('<?= json_encode($user, true) ?>')
-    var points = JSON.parse('<?= json_encode($points, true) ?>')
-    var vm = new Vue({
-        el: '#user-pointclound-page',
-        data: {
-            user: user,
-            points: points
-        },
-        methods: {
-            getAvatarPath: function(avatar) {
-                var path = '<?= Yii::$app->homeUrl ?>' + (avatar ? 'uploads/' + avatar : 'resources/images/no_avatar.jpg')
-                return path
+    $(function() {
+        var user = JSON.parse('<?= json_encode($user, true) ?>')
+        var vm = new Vue({
+            el: '#my-plan-page',
+            data: {
+                user: user,
+                avatar: user.avatar,
+                plans: null,
+                planSelected: null
+            },
+            created: function() {
+                this.getUserPlans()
+            },
+            methods: {
+                getUserPlans: function() {
+                    var _this = this
+                    var api = '<?= APPConfig::getUrl('user/get-user-plans') ?>' + `?id=${this.user.id}`
+
+                    sendAjax(api, {}, 'GET', (resp) => {
+                        if (resp.status) {
+                            _this.plans = resp.plans
+                            _this.fixImageActionsHeight()
+                        }
+                    })
+                },
+
+                fixImageActionsHeight: function() {
+                    this.$nextTick(function() {
+                        fixImageActionsHeight()
+                    })
+                },
+
+                getAvatarPath: function(avatar) {
+                    var path = '<?= Yii::$app->homeUrl ?>' + (avatar ? 'uploads/' + avatar : 'resources/images/no_avatar.jpg')
+                    return path
+                },
+
+                confirmDelete: function(slug) {
+                    this.planSelected = slug
+                    $('#delete-modal').modal()
+                },
+
+                deletePlan: function() {
+                    var api = '<?= APPConfig::getUrl('plan/delete') ?>',
+                        data = {slug: this.planSelected}
+                    sendAjax(api, data, 'POST', function(resp) {
+                        if(resp.status) {
+                            window.location.reload()
+                        } else {
+                            toastMessage('error', resp.message)
+                        }
+                    })
+                },
             }
-        }
+        })
     })
 </script>

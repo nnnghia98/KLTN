@@ -33,11 +33,15 @@ class PlanController extends Controller
     }
 
     public function actionEdit($slug) {
+        $userid = Yii::$app->user->id;
         $model = PlanService::GetPlanBySlug($slug);
-        $model = ArrayHelper::toArray($model);
-        $model['detail'] = json_decode($model['detail'], true);
-        $model['routes'] = json_decode($model['routes'], true);
-        return $this->render('edit', compact('model'));
+        if ($model && $model->created_by == $userid) {
+            $model = ArrayHelper::toArray($model);
+            $model['detail'] = json_decode($model['detail'], true);
+            $model['routes'] = json_decode($model['routes'], true);
+            return $this->render('edit', compact('model'));
+        }
+        throw new NotFoundHttpException();
     }
 
     public function actionDetail($slug) {
@@ -69,6 +73,19 @@ class PlanController extends Controller
         throw new NotFoundHttpException();
     }
 
+    public function actionDelete() {
+        $request = Yii::$app->request;
+        if($request->isPost) {
+            $result = PlanService::Delete($request->post());
+            if($result) {
+                Yii::$app->session->setFlash('success', PlanService::$RESPONSE['DELETE_SUCCESS']);
+                return $this->asJson(['status' => true]);
+            }
+            return $this->asJson(['status' => false, 'message' => PlanService::$RESPONSE['ACTION_ERROR']]);
+        }
+        throw new NotFoundHttpException();
+    }
+
     /**-------------API-----------------*/
     public function actionGetList($page = 1, $perpage = 9, $destination = 13, $comment = 1, $rating = 0) {
         list($plans, $pagination) = PlanService::GetListAppPage($page, $perpage, $destination, $comment, $rating);
@@ -80,7 +97,21 @@ class PlanController extends Controller
         return $this->asJson($response);
     }
 
-    public function actionGetDetail() {
-        
+    public function actionGetComments($id, $page) {
+        $comments = PlanService::GetComments($id, $page, 10);
+        $response = [
+            'status' => true, 
+            'comments' => $comments
+        ];
+        return $this->asJson($response);
+    }
+
+    public function actionGetInteractive($id) {
+        $interactive = PlanService::GetInteractiveOfCurrentUser($id);
+        $response = [
+            'status' => true, 
+            'interactive' => $interactive
+        ];
+        return $this->asJson($response);
     }
 }

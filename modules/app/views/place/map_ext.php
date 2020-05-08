@@ -47,10 +47,10 @@ use app\modules\app\APPConfig;
                 background: #f0f0f0 !important;
             }
     
-    .media-list-photo img {
+    /* .media-list-photo img {
         height: 35px !important;
         width: 50px !important;
-    }
+    } */
 
     #map {
         z-index: 0;
