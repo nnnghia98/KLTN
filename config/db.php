@@ -2,8 +2,8 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'pgsql:host=localhost;dbname=kltn;port=5432',
+    'dsn' => 'pgsql:host=127.0.0.1;dbname=db_kltn;port=5432',
     'username' => 'postgres',
-    'password' => 'ngocloi148',
+    'password' => 'root',
     'charset' => 'utf8'
 ];
