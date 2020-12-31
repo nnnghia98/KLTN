@@ -27,16 +27,7 @@ class DataController extends Controller
     public $enableCsrfValidation = false;
 
     public function actionIndex() {
-        // $url = 'https://www.foody.vn/ho-chi-minh/binh-luan';
-        $url = 'https://gody.vn/chau-a/viet-nam/lam-dong/ho-xuan-huong';
-        // // Open foody.vn with ssl
-        // $opts = array('http'=>array('header' => "User-Agent:MyAgent/1.0\r\n")); 
-        // // Basically adding headers to the request
-        // $context = stream_context_create($opts);
-        // $html = file_get_contents($url, false, $context);
-        // $html = htmlspecialchars($html);
-        $html = file_get_html($url);
-        return $this->render('index', compact('html'));
+        return $this->render('index');
     }
 
     // public function actionGetDestinations() {
