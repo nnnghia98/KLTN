@@ -113,5 +113,19 @@ class PlanController extends Controller
             'interactive' => $interactive
         ];
         return $this->asJson($response);
+        
+    }
+    public function actionSubmitComment() {
+        $request = Yii::$app->request;
+        if($request->isPost) {
+            $result = PlanService::SubmitComment($request->post());
+            if($result === true) {
+                return $this->asJson(['status' => true]);
+            }
+            
+            return $this->asJson(['status' => true, 'message' => $result]);
+        }
+
+        throw new NotFoundHttpException();
     }
 }

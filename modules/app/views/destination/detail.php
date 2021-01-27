@@ -119,13 +119,13 @@ $pageData = [
                     <h3 class="card-title" v-cloak>Bình luận ({{ destination.count_comment }})</h3>
                 </div>
                 <?php if (!Yii::$app->user->isGuest) : ?>
-                    <div class="card-body">
+                    <div class="card-body" v-if="interactive">
                         <div class="form-group d-flex align-items-center">
                             <span class="mr-2">Đánh giá: </span>
                             <rating :star="interactive.star" @change="interactive.star = $event" :key="interactive.star"></rating>
                         </div>
                         <div class="form-group">
-                            <textarea id="comment-text" class="form-control" rows="5">{{ interactive.comment ? interactive.comment : '' }}</textarea>
+                            <textarea id="comment-text" class="form-control" rows="5" v-model="interactive.comment"></textarea>
                         </div>
                         <div class="form-group text-right mb-0">
                             <button class="btn bg-pink-400 rounded-round" @click="submitComment">Bình luận</button>
@@ -183,7 +183,7 @@ $pageData = [
                 plans: [],
                 comments: [],
                 comment_page: 1,
-                interactive: {}
+                interactive: null
             },
             created: function() {
                 this.getDestinationImages()

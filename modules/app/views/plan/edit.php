@@ -611,7 +611,7 @@ $pageData = [
                         sendAjax(api, data, 'POST', (resp) => {
                             if (resp.status) {
                                 var slug = _this.plan.slug
-                                // window.location.assign('<?= APPConfig::getUrl('plan/detail/') ?>' + slug)
+                                window.location.assign('<?= APPConfig::getUrl('plan/detail/') ?>' + slug)
                             } else {
                                 toastMessage('error', resp.message)
                             }

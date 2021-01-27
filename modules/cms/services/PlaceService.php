@@ -214,7 +214,7 @@ class PlaceService
         
         return [
             'star' => 0,
-            'comment' => 0,
+            'comment' => "",
         ];
     }
 

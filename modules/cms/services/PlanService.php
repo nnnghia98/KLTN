@@ -4,6 +4,7 @@ namespace app\modules\cms\services;
 
 use app\modules\cms\models\Plan;
 use app\modules\cms\models\PlanDetail;
+use app\modules\cms\models\Interactive;
 use app\modules\cms\services\InteractiveService;
 use DateTime;
 use Yii;
@@ -256,8 +257,51 @@ class PlanService
         
         return [
             'star' => 0,
-            'comment' => 0,
+            'comment' => "",
             'like' => 0
         ];
     }
+    public static function SubmitComment($data) {
+        if(!Yii::$app->user->isGuest) {
+            $id = $data['id'];
+            $star = intval($data['star']);
+            $comment = $data['comment'];
+            $userid = Yii::$app->user->id;
+
+            if(!$comment) {
+                return 'Nội dung bình luận không được để trống';
+            }
+
+            if($star > 5 || $star < 1) {
+                return 'Giá trị đánh giá không khả dụng';
+            }
+
+            $interactive = Interactive::find()
+                        ->where(['and', ['object_id' => $id], ['object_type' => self::$OBJECT_TYPE]])
+                        ->andWhere(['created_by' => $userid])
+                        ->one();
+
+            if($interactive) {
+                $interactive->comment = $comment;
+                $interactive->rating = $star;
+            } else {
+                $interactive = new Interactive([
+                    'object_type' => self::$OBJECT_TYPE,
+                    'object_id' => $id,
+                    'created_by' => $userid,
+                    'rating' => $star,
+                    'comment' => $comment,
+                ]);
+            }
+
+            if($interactive->save()) {
+                return true;
+            } else {
+                return 'Không thể lưu bình luận của bạn';
+            }
+        }
+
+        return 'Bạn cần đăng nhập để thực hiện chức năng này';
+    }
 }
+    

@@ -34,7 +34,7 @@ $pageData = [
                     <div class="share-plan cursor-pointer" @click="sharePlan"><i class="icon-share3 icon-2x text-indigo-400"></i></div>
                     <div class="like-plan cursor-pointer ml-3" @click="likePlan"><i class="icon-heart6 icon-2x text-indigo-400"></i></div>
                     <div class="copy ml-3">
-                        <a href="" class="btn bg-pink-400 rounded-round">Sao chép và chỉnh sửa <i class="ml-2 icon-copy3"></i></a>
+                        <a :href="'<?= APPConfig::getUrl('plan/edit/') ?>' + plan.slug" class="btn bg-pink-400 rounded-round">Sao chép và chỉnh sửa <i class="ml-2 icon-copy3"></i></a>
                     </div>
                 </div>
             </div>
@@ -93,13 +93,13 @@ $pageData = [
                         <h3 class="card-title" v-cloak>Bình luận ({{ plan.count_comment ? plan.count_comment : '0' }})</h3>
                     </div>
                     <?php if (!Yii::$app->user->isGuest) : ?>
-                        <div class="card-body">
+                        <div class="card-body" v-if="interactive">
                             <div class="form-group d-flex align-items-center">
                                 <span class="mr-2">Đánh giá: </span>
                                 <rating :star="interactive.star" @change="interactive.star = $event" :key="interactive.star"></rating>
                             </div>
                             <div class="form-group">
-                                <textarea id="comment-text" class="form-control" rows="5">{{ interactive.comment ? interactive.comment : '' }}</textarea>
+                                <textarea id="comment-text" class="form-control" rows="5" v-model="interactive.comment"></textarea>
                             </div>
                             <div class="form-group text-right mb-0">
                                 <button class="btn bg-pink-400 rounded-round" @click="submitComment">Bình luận</button>

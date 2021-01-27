@@ -81,7 +81,7 @@ class DestinationController extends Controller
         ];
         return $this->asJson($response);
     }
-
+   
     public function actionGetInteractive($id) {
         $interactive = DestinationService::GetInteractiveOfCurrentUser($id);
         $response = [
