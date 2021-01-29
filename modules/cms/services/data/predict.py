@@ -50,24 +50,6 @@ def load_data_from_url(url):
     driver.close()
     return list_review
 
-def predict(url):
-    print(url)
-    # url = format(str(sys.argv[1:][0]))
-    # 1. Load URL and print comments
-    if url== "":
-        url = "https://gody.vn/chau-a/viet-nam/da-nang/cau-tinh-yeu"
-    data = load_data_from_url(url)
-    print(data)
-    # data = processing_data(data)
-    # features = load_pretrainModel(data)
-    # # 2. Load weights
-    # model = joblib.load('save_model.pkl')
-    # # 3. Result
-    # result = model.predict(features)
-    # print(result)
-    # print(analyze(result))
-
-
 def standardize_data(row):
     # remove stopword
     # Remove . ? , at index final
@@ -101,7 +83,7 @@ def analyze(result):
 def processing_data(data):
     # 1. Standardize data
     data_frame = pd.DataFrame(data)
-    print('data frame:', data_frame)
+    print('Data frame:', data_frame)
     data_frame[0] = data_frame[0].apply(standardize_data)
 
     # 2. Tokenizer
@@ -110,3 +92,67 @@ def processing_data(data):
     # 3. Embedding
     X_val = data_frame[0]
     return X_val
+
+def load_pretrainModel(data):
+    
+    '''
+    Load pretrain model/ tokenizers
+    Return : features
+    '''
+    model = BertModel.from_pretrained('bert-base-uncased')
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    #encode lines
+    tokenized = data.apply((lambda x: tokenizer.encode(x, add_special_tokens = True)))
+
+    # get lenght max of tokenized
+    max_len = 0
+    for i in tokenized.values:
+        if len(i) > max_len:
+            max_len = len(i)
+    print('max len:', max_len)
+
+    # if lenght of tokenized not equal max_len , so padding value 0
+    padded = np.array([i + [0]*(max_len-len(i)) for i in tokenized.values])
+    print('padded:', padded[1])
+    print('len padded:', padded.shape)
+
+    #get attention mask ( 0: not has word, 1: has word)
+    attention_mask = np.where(padded ==0, 0,1)
+    print('attention mask:', attention_mask[1])
+
+    # Convert input to tensor
+    padded = torch.tensor(padded, dtype = torch.long)
+    attention_mask = torch.tensor(attention_mask, dtype = torch.long)
+
+    # Load model
+    with torch.no_grad():
+        last_hidden_states = model(padded, attention_mask =attention_mask)
+    #     print('last hidden states:', last_hidden_states)
+
+    features = last_hidden_states[0][:,0,:].numpy()
+    print('features:', features)
+    
+    return features
+
+def predict(url):
+    print(url)
+    # url = format(str(sys.argv[1:][0]))
+    # Load URL and print comments
+    if url== "":
+        url = "https://gody.vn/chau-a/viet-nam/da-nang/cau-tinh-yeu"
+    data = load_data_from_url(url)
+
+    # Processing data (tokenize, regexp, ...)
+    data = processing_data(data)
+
+    # Load pretrain model BERT
+    features = load_pretrainModel(data)
+
+    # Load weights
+    model = joblib.load('travel_model.pkl')
+
+    # Result
+    result = model.predict(features)
+    print(result)
+    print(analyze(result))
