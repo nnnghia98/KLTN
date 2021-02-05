@@ -48,7 +48,21 @@ def load_data_from_url(url):
             list_review.append(review)
 
     driver.close()
-    return list_review
+    tmp_list_review = [
+        'Phong cảnh rất đẹp, nên thơ',
+        'Xấu',
+        'Tệ',
+        'Không tốt',
+        'Chỗ này rất đẹp, rất ổn.',
+        'Rất phù hợp để vui chơi giải trí',
+        'Nếu được quay lại nhất định sẽ đi',
+        'Không tốt cũng không xấu',
+        'Xuất sắc!!!',
+        'Quá tệ!!!',
+        'Chắc không quay lại đâu'
+    ]
+    # return 1
+    return tmp_list_review
 
 def standardize_data(row):
     # remove stopword
