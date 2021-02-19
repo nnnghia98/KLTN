@@ -103,13 +103,13 @@ Vue.component('place-choosen', {
     template: `<li>
         <div class="media">
             <div class="mr-2" style="width: 30%; max-width: 225px">
-                <a :href="root + 'app/place/detail/' + place.slug" class="media-list-photo">
+                <a :href="root + 'app/place/detail/' + place.slug" target="_blank" class="media-list-photo">
                     <img :src="root + 'uploads/' + place.thumbnail" :alt="place.name" class="w-100 h-auto">
                 </a>
             </div>
             <div class="media-body">
                 <h4 class="media-title font-weight-bold">
-                    <a :href="root + 'app/place/detail/' + place.slug">{{ place.name }}</a>
+                    <a :href="root + 'app/place/detail/' + place.slug" target="_blank">{{ place.name }}</a>
                 </h4>
                 <h6 class="mb-0 text-muted"><i class="icon-home5 mr-1"></i>{{ place.address }}</h6>
                 <rating-star-static :rating="place.avg_rating" :key="place.slug"></rating-star-static>
@@ -212,6 +212,7 @@ Vue.component('place-item', {
                             </div>
                         </div>
                     </div>
+                    <div class="place-note mt-2 p-2" style="border-radius: .3125rem; border: 1px dashed #aaa;" v-if="place.note">{{ place.note }}</div>
                     <div class="remove-btn position-absolute top-0 right-0">
                         <a @click="$emit('remove-place', didx, pidx)" class="text-danger"><i class="icon-cancel-circle2"></i></a>
                     </div>
@@ -332,6 +333,7 @@ Vue.component('place-item-detail', {
                             </a>
                             <span class="mb-1">Bắt đầu: {{ oclockTimeFormat(place.time_start) }}</span>
                             <span class="mb-1">Lưu trú: {{ rangeTimeFormat(place.time_stay) }}</span>
+                            <div class="place-note mt-2 p-2" style="border-radius: .3125rem; border: 1px dashed #aaa;" v-if="place.note">{{ place.note }}</div>
                         </div>
                     </div>
                 </div>
@@ -483,7 +485,15 @@ Vue.component('comment-list', {
 
             <div class="media-body">
                 <div class="media-chat-item bg-indigo-400">{{ cmt.comment }}</div>
-                <div class="font-size-sm text-muted mt-2"><a href="#"><b>{{ cmt.author }}</b></a> • {{ formatTime(cmt.created_at) }}</div>
+                <div class="rating-wrap d-flex my-2">
+                    <i arian-hidden="true" class="icon-star icon-star-full2" :class="cmt.rating >= 1 ? 'active' : ''"></i>
+                    <i arian-hidden="true" class="icon-star icon-star-full2" :class="cmt.rating >= 2 ? 'active' : ''"></i>
+                    <i arian-hidden="true" class="icon-star icon-star-full2" :class="cmt.rating >= 3 ? 'active' : ''"></i>
+                    <i arian-hidden="true" class="icon-star icon-star-full2" :class="cmt.rating >= 4 ? 'active' : ''"></i>
+                    <i arian-hidden="true" class="icon-star icon-star-full2" :class="cmt.rating >= 5 ? 'active' : ''"></i>
+                </div>
+                <div class="font-size-sm text-muted"><a href="#"><b>{{ cmt.author }}</b></a> • {{ formatTime(cmt.created_at) }}</div>
+                
             </div>
         </li>
     </ul>`,

@@ -333,12 +333,21 @@ $pageData = [
 
                 addPlace: function(place, didx) {
                     var duplicate = false
-                    this.plan.detail[didx].places.forEach(p => {
-                        if (p.slug == place.slug) {
-                            duplicate = true
-                            toastMessage('error', 'Địa điểm đã có trong lịch trình')
-                        }
+                    this.plan.detail.every(d => {
+                        d.places.every(p => {
+                            if (p.slug == place.slug) {
+                                duplicate = true
+                                toastMessage('error', 'Địa điểm đã có trong lịch trình')
+                                return false
+                            }
+                        });
                     })
+                    // this.plan.detail[didx].places.forEach(p => {
+                    //     if (p.slug == place.slug) {
+                    //         duplicate = true
+                    //         toastMessage('error', 'Địa điểm đã có trong lịch trình')
+                    //     }
+                    // })
 
                     if (!duplicate) {
                         this.calDistanceBetweenLastPlaceInDateWithNewPlace(place, didx);
@@ -541,49 +550,52 @@ $pageData = [
                         promies = []
 
                     this.plan.detail.forEach(function(dateItem, index) {
-                        var api = 'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=hPtC4kp3SDaqlFsNbcT_zPpyknvCfWEdcxejzcUk8zI'
-                        dateItem.places.forEach((wp, idx) => {
-                            api += `&waypoint${idx}=geo!${wp.lat},${wp.lng}`
-                        })
-                        api += '&routeattributes=sh&mode=fastest;car';
+                        if(dateItem.places.length > 1) {
+                            var api = 'https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=hPtC4kp3SDaqlFsNbcT_zPpyknvCfWEdcxejzcUk8zI'
+                            dateItem.places.forEach((wp, idx) => {
+                                api += `&waypoint${idx}=geo!${wp.lat},${wp.lng}`
+                            })
+                            api += '&routeattributes=sh&mode=fastest;car';
 
-                        var request = $.ajax({
-                            url: api,
-                            type: 'GET',
-                            success: function(resp) {
-                                if (resp.response.route) {
-                                    var data = resp.response.route[0]
-                                    var geojson = {
-                                        type: 'LineString',
-                                        coordinates: []
-                                    }
-                                    data.shape.forEach((latlng) => {
-                                        geojson.coordinates.push(latlng.split(',').reverse())
-                                    })
-
-                                    var counter = 0
-                                    data.waypoint.forEach((wp, idx) => {
-                                        var place = dateItem.places[idx]
-                                        if(idx != dateItem.places.length - 1) {
-                                            geojson.coordinates.splice(wp.shapeIndex + counter, 0, [place.lng, place.lat])
-                                            counter++
-                                        } else {
-                                            geojson.coordinates.push([place.lng, place.lat])
+                            var request = $.ajax({
+                                url: api,
+                                type: 'GET',
+                                success: function(resp) {
+                                    if (resp.response.route) {
+                                        var data = resp.response.route[0]
+                                        var geojson = {
+                                            type: 'LineString',
+                                            coordinates: []
                                         }
-                                        
-                                    })
+                                        data.shape.forEach((latlng) => {
+                                            geojson.coordinates.push(latlng.split(',').reverse())
+                                        })
 
-                                    _this.plan.routes[index] = geojson
-                                } else {
-                                    toastMessage('error', 'Không thể lấy thông tin tuyến đường')
+                                        var counter = 0
+                                        data.waypoint.forEach((wp, idx) => {
+                                            var place = dateItem.places[idx]
+                                            if(idx != dateItem.places.length - 1) {
+                                                geojson.coordinates.splice(wp.shapeIndex + counter, 0, [place.lng, place.lat])
+                                                counter++
+                                            } else {
+                                                geojson.coordinates.push([place.lng, place.lat])
+                                            }
+                                            
+                                        })
+
+                                        _this.plan.routes[index] = geojson
+                                    } else {
+                                        toastMessage('error', 'Không thể lấy thông tin tuyến đường')
+                                    }
+                                },
+                                error: function(msg) {
+                                    console.log(msg)
                                 }
-                            },
-                            error: function(msg) {
-                                console.log(msg)
-                            }
-                        })
+                            })
 
-                        promies.push(request)
+                            promies.push(request)
+                        }
+                        
                     })
 
                     $.when.apply(null, promies).done(callback)
