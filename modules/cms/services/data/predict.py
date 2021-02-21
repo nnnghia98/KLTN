@@ -29,40 +29,19 @@ def load_data_from_url(url):
     list_review = []
 
     try:
-        WebDriverWait(driver, 30).until(EC.visibility_of_all_elements_located(By.CSS_SELECTOR, 'span.more-string.lh-24'))
+        element = WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".media-chat-item.bg-indigo-400")))
     except:
         print('Do not have any comment.')
 
-    review_list = driver.find_elements_by_css_selector('span.more-string.lh-24')
+    reviews = driver.find_elements_by_css_selector('.media-chat-item.bg-indigo-400')
     
-    for review in review_list:
-        more_content = review.find_elements(By.CSS_SELECTOR, '.morelink.fc-primary')
-    
-        if len(more_content) == 0:
-            review = review.text
-        else:
-            more_content[0].click()
-            review = review.text[:-8]
-
+    for review in reviews:
+        review = review.text
         if (review != "" or review.strip()):
             list_review.append(review)
 
     driver.close()
-    tmp_list_review = [
-        'Phong cảnh rất đẹp, nên thơ',
-        'Xấu',
-        'Tệ',
-        'Không tốt',
-        'Chỗ này rất đẹp, rất ổn.',
-        'Rất phù hợp để vui chơi giải trí',
-        'Nếu được quay lại nhất định sẽ đi',
-        'Không tốt cũng không xấu',
-        'Xuất sắc!!!',
-        'Quá tệ!!!',
-        'Chắc không quay lại đâu'
-    ]
-    # return 1
-    return tmp_list_review
+    return list_review
 
 def standardize_data(row):
     # remove stopword
@@ -154,7 +133,7 @@ def predict(url):
     # url = format(str(sys.argv[1:][0]))
     # Load URL and print comments
     if url== "":
-        url = "https://gody.vn/chau-a/viet-nam/da-nang/cau-tinh-yeu"
+        url = "http://localhost/KLTN/web/app/place/detail/den-quan-thanh-tran-vu-quan"
     data = load_data_from_url(url)
 
     # Processing data (tokenize, regexp, ...)
