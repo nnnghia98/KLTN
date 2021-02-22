@@ -154,22 +154,22 @@ def predict(url):
     print(result)
     print(analyze(result))
 
-# def schedule:
-#     try:
-#         # connect to the PostgreSQL server
-#         conn = psycopg2.connect(host="localhost",database="db_kltn", user="postgres", password="root")
+def schedule:
+    try:
+        # connect to the PostgreSQL server
+        conn = psycopg2.connect(host="localhost",database="db_kltn", user="postgres", password="root")
 
-#         # create a cursor
-#         cur = conn.cursor()
+        # create a cursor
+        cur = conn.cursor()
 
-#         # Execute a sql
-#         names = cur.execute('SELECT name FROM place WHERE place_type_id='1'')
+        # Execute a sql
+        names = cur.execute('SELECT name FROM place WHERE place_type_id='1'')
 
-#         for names in name:
-#             predict = predict('http://localhost/KLTN/web/app/place/detail/' + ''))
-#             cur.execute(""" INSERT INTO interactive (rating) VALUES (%s)""", predict)
+        for names in name:
+            predict = predict('http://localhost/KLTN/web/app/place/detail/' + ''))
+            cur.execute(""" INSERT INTO interactive (rating) VALUES (%s)""", predict)
 
-# schedule.every().day.at("10:30").do(schedule)
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+schedule.every().day.at("10:30").do(schedule)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
