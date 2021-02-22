@@ -20,6 +20,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
+
+import schedule
+# import psycopg2
+
 # import requests
 
 def load_data_from_url(url):
@@ -65,13 +69,13 @@ def tokenizer(row):
 def analyze(result):
     bad = np.count_nonzero(result)
     good = len(result) - bad
-    print("No of bad and neutral comments = ", bad)
-    print("No of good comments = ", good)
+    print("Số bình luận xấu hoặc không thể hiện tính chất: ", bad)
+    print("Số bình luận tốt: ", good)
 
     if good>bad:
-        return "Good! You can visit there"
+        return "Tốt! Bạn nên ghé thăm!"
     else:
-        return "Bad! Please check it carefully!"
+        return "Nên tìm hiểu trước khi đến!"
 
 def processing_data(data):
     # 1. Standardize data
@@ -149,3 +153,22 @@ def predict(url):
     result = model.predict(features)
     print(result)
     print(analyze(result))
+
+schedule.every().day.at("10:30").do(predict)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+
+try:
+    # connect to the PostgreSQL server
+    conn = psycopg2.connect(host="localhost",database="db_kltn", user="postgres", password="root")
+
+    # create a cursor
+    cur = conn.cursor()
+
+    # Execute a sql
+    names = cur.execute('SELECT name FROM place WHERE place_type_id='1'')
+
+    for names in name:
+        predict = predict('http://localhost/KLTN/web/app/place/detail/' + ''))
+        cur.execute(""" INSERT INTO interactive (rating) VALUES (%s)""", predict)
