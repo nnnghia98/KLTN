@@ -8,14 +8,11 @@ import torch
 import transformers
 from transformers import BertModel, BertTokenizer
 import joblib
-from bert_sklearn import BertClassifier
-from bert_sklearn import BertRegressor
-from bert_sklearn import load_model
 
 #####################
 # Load data comment #
 #####################
-df = pd.read_csv('data_csv_test_final.csv', delimiter='\t', header=None)
+df = pd.read_csv('data_csv_test_final_1.csv', delimiter='\t', header=None)
 print(df.shape)
 # get all rows
 # print(df[0])
@@ -28,7 +25,7 @@ Load pretrain model/ tokenizers
 '''
 model = BertModel.from_pretrained('bert-base-uncased')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-evaluate_model = BertClassifier() 
+# evaluate_model = BertClassifier()
 
 # Encode lines
 tokenized = df[0].apply((lambda x: tokenizer.encode(x, add_special_tokens = True)))
@@ -78,7 +75,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, labels)
 cl = LogisticRegression()
 cl.fit(X_train, y_train)
 
-model.score(X_test, y_test)
+# model.score(X_test, y_test)
 
 # Save model
 joblib.dump(cl, 'travel_model.pkl')
